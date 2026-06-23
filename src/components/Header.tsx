@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, User, Award, Shield, LogOut, ChevronDown, CheckCircle, Globe, ShoppingCart, Menu, X } from 'lucide-react';
+import { Bell, User, Award, Shield, LogOut, ChevronDown, CheckCircle, Globe, ShoppingCart, Menu, X, Sun, Moon } from 'lucide-react';
 import { UserProfile, Notification } from '../types';
 
 interface HeaderProps {
@@ -11,6 +11,8 @@ interface HeaderProps {
   onClearNotifications: () => void;
   onCartClick?: () => void;
   cartCount?: number;
+  theme?: 'light' | 'dark';
+  onToggleTheme?: () => void;
 }
 
 export default function Header({
@@ -22,6 +24,8 @@ export default function Header({
   onClearNotifications,
   onCartClick,
   cartCount,
+  theme = 'dark',
+  onToggleTheme,
 }: HeaderProps) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -153,6 +157,16 @@ export default function Header({
                 {cartCount}
               </span>
             )}
+          </button>
+
+          {/* THEME TOGGLE (Sun/Moon) */}
+          <button 
+            onClick={onToggleTheme}
+            className="p-2 border border-orange-500/25 text-orange-400 hover:text-orange-300 hover:bg-orange-950/15 rounded-lg cursor-pointer transition-all whitespace-nowrap"
+            title={theme === 'dark' ? "Switch to Light Theme" : "Switch to Dark Theme"}
+            id="theme-toggle-btn"
+          >
+            {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
           </button>
 
           {/* Language Selector Dropdown matching screenshots */}

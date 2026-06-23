@@ -25,6 +25,26 @@ import GuruPortal from './components/GuruPortal';
 import { Course, UserProfile, Enrollment, Quiz, QuizAttempt, CourseNote, DiscussionThread, Notification, Order, Certificate } from './types';
 
 export default function App() {
+  // DARK / LIGHT THEME STATE WITH LOCALSTORAGE SYNCHRONIZATION
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('sanatan-theme') as 'light' | 'dark') || 'dark';
+  });
+
+  // Apply theme class to document root
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.add('light');
+    } else {
+      root.classList.remove('light');
+    }
+    localStorage.setItem('sanatan-theme', theme);
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   // USER PROFILE & ROLE MANAGEMENT
   const [currentUser, setCurrentUser] = useState<UserProfile>({
     id: "user-student",
@@ -725,6 +745,8 @@ export default function App() {
         onClearNotifications={handleClearNotifications}
         onCartClick={() => setIsCartOpen(true)}
         cartCount={cart.length}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Hero Header Space on Explore tab with beautiful sacred theme */}
