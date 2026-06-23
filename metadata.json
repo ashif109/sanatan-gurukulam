@@ -1,0 +1,6 @@
+{
+  "name": "Sanatan Gurukul",
+  "description": "A global-scale premium spiritual LMS and E-Learning platform combining Vedic courses, elite lineage Guru bookings, interactive astrological chart systems, and a dedicated AI concept analyzer.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

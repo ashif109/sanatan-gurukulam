@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Marcellus&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Cinzel", Georgia, serif;
+  --font-display: "Marcellus", serif;
+  --font-sans: "Poppins", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-sacred-black: #080402;
+  --color-sacred-dark: #0f0805;
+  --color-sacred-accent: #f97316;
+  --color-sacred-gold: #eab308;
+}
+
+:root, body {
+  font-family: "Poppins", system-ui, -apple-system, sans-serif;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 25s linear infinite;
+}
+
+/* Custom glow borders */
+.sacred-glow {
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+}
+.gold-glow {
+  box-shadow: 0 0 25px rgba(234, 179, 8, 0.12);
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080402;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(249, 115, 22, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}

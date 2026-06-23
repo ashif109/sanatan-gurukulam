@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global safety net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Global Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // User profiles (anyone signed in can get a profile, but listing is constrained, only the owner can write/update)
+    match /users/{userId} {
+      allow get: if isSignedIn();
+      allow list: if isSignedIn() && resource.data.id == request.auth.uid;
+      allow create, update: if isOwner(userId);
+    }
+
+    // Educational courses (allow public read, write/moderation is done by signed-in authors/admins)
+    match /courses/{courseId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Course enrollments (students can track their own learning paths)
+    match /enrollments/{enrollmentId} {
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow write: if isSignedIn() && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+
+    // Interactive Quizzes (public study modules, readable by signed in)
+    match /quizzes/{quizId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    // Quiz attempts (private assessment scores)
+    match /quiz_attempts/{attemptId} {
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow write: if isSignedIn() && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+
+    // Video notes annotations
+    match /notes/{noteId} {
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow write: if isSignedIn() && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+
+    // Public discussions threads (any shishya or guru can read and post replies)
+    match /discussions/{discussionId} {
+      allow read: if true; 
+      allow write: if isSignedIn();
+    }
+
+    // Push notifications warnings
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow write: if isSignedIn() && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+
+    // Orders receipts
+    match /orders/{orderId} {
+      allow read: if isSignedIn() && (resource == null || resource.data.userId == request.auth.uid);
+      allow write: if isSignedIn() && (request.resource == null || request.resource.data.userId == request.auth.uid);
+    }
+  }
+}

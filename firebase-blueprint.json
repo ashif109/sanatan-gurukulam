@@ -1,0 +1,189 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Represents a user's details, role, and history.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique user ID" },
+        "name": { "type": "string", "description": "Display name of the user" },
+        "email": { "type": "string", "description": "Email address of the user" },
+        "role": { "type": "string", "enum": ["student", "instructor", "admin", "super_admin"] },
+        "avatarUrl": { "type": "string", "description": "URL of the user's avatar" },
+        "wishlist": { "type": "array", "description": "List of course IDs user has wishlisted" },
+        "certificates": { "type": "array", "description": "List of certificates earned" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Information about a digital learning course.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "difficulty": { "type": "string", "enum": ["Beginner", "Intermediate", "Advanced"] },
+        "thumbnail": { "type": "string" },
+        "price": { "type": "number" },
+        "originalPrice": { "type": "number" },
+        "rating": { "type": "number" },
+        "reviewsCount": { "type": "number" },
+        "instructorId": { "type": "string" },
+        "instructorName": { "type": "string" },
+        "highlights": { "type": "array" },
+        "studentsCount": { "type": "number" },
+        "status": { "type": "string", "enum": ["approved", "pending", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "category", "instructorId", "status"]
+    },
+    "Enrollment": {
+      "title": "Enrollment",
+      "description": "A record that a user is taking a course.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "courseId": { "type": "string" },
+        "progressPercentage": { "type": "number" },
+        "completedModuleIds": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "courseId"]
+    },
+    "Quiz": {
+      "title": "Quiz",
+      "description": "An interactive assessment.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "courseId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "durationMinutes": { "type": "number" },
+        "questions": { "type": "array" }
+      },
+      "required": ["id", "courseId", "questions"]
+    },
+    "QuizAttempt": {
+      "title": "QuizAttempt",
+      "description": "An attempt of a quiz by a user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "quizId": { "type": "string" },
+        "userId": { "type": "string" },
+        "scorePercentage": { "type": "number" },
+        "correctCount": { "type": "number" },
+        "totalQuestions": { "type": "number" },
+        "completedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "quizId", "userId", "scorePercentage"]
+    },
+    "CourseNote": {
+      "title": "CourseNote",
+      "description": "A student written note on a custom course/video timestamp.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "courseId": { "type": "string" },
+        "moduleId": { "type": "string" },
+        "videoTimeSeconds": { "type": "number" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "courseId", "moduleId", "text"]
+    },
+    "DiscussionThread": {
+      "title": "DiscussionThread",
+      "description": "A dynamic public Q&A and community feed.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "courseId": { "type": "string" },
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorRole": { "type": "string" },
+        "likesCount": { "type": "number" },
+        "replies": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "body", "authorId", "authorName"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "Push/In-App alert sent to the user.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "text": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "success", "alert", "update"] },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "title"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Transactions of purchases.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "courseId": { "type": "string" },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "status": { "type": "string", "enum": ["created", "paid", "failed"] },
+        "paymentGateway": { "type": "string", "enum": ["stripe", "razorpay"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "courseId", "amount", "status"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "UserProfile",
+      "description": "Contains user private configuration and dashboard flags."
+    },
+    "courses/{courseId}": {
+      "schema": "Course",
+      "description": "Contains approved or pending EdTech courses."
+    },
+    "enrollments/{enrollmentId}": {
+      "schema": "Enrollment",
+      "description": "Maps student progress inside individual courses."
+    },
+    "quizzes/{quizId}": {
+      "schema": "Quiz",
+      "description": "Chapter and video assessment modules."
+    },
+    "quiz_attempts/{attemptId}": {
+      "schema": "QuizAttempt",
+      "description": "LMS final grade records."
+    },
+    "notes/{noteId}": {
+      "schema": "CourseNote",
+      "description": "Course learning video annotation clips."
+    },
+    "discussions/{discussionId}": {
+      "schema": "DiscussionThread",
+      "description": "Discussion channels and course feedback feeds."
+    },
+    "notifications/{notificationId}": {
+      "schema": "Notification",
+      "description": "Visual alerts for course submissions or schedules."
+    },
+    "orders/{orderId}": {
+      "schema": "Order",
+      "description": "Financial payment receipts."
+    }
+  }
+}
