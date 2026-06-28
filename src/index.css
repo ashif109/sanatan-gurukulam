@@ -1,0 +1,924 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Marcellus&family=Pliant:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=JetBrains+Mono:wght@400;500;600&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "tailwindcss";
+
+
+@theme {
+  --font-serif: "Cinzel", Georgia, serif;
+  --font-display: "Marcellus", serif;
+  --font-sans: "Poppins", system-ui, sans-serif;
+  --font-pliant: "Pliant", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-sacred-black: #080402;
+  --color-sacred-dark: #0f0805;
+  --color-sacred-accent: #f97316;
+  --color-sacred-gold: #eab308;
+}
+
+:root, body {
+  font-family: "Poppins", system-ui, -apple-system, sans-serif;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 25s linear infinite;
+}
+
+/* Custom glow borders */
+.sacred-glow {
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+}
+.gold-glow {
+  box-shadow: 0 0 25px rgba(234, 179, 8, 0.12);
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #080402;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(249, 115, 22, 0.4);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #eab308;
+}
+
+/* Poppins Classes */
+.poppins-thin { font-family: "Poppins", sans-serif; font-weight: 100; font-style: normal; }
+.poppins-extralight { font-family: "Poppins", sans-serif; font-weight: 200; font-style: normal; }
+.poppins-light { font-family: "Poppins", sans-serif; font-weight: 300; font-style: normal; }
+.poppins-regular { font-family: "Poppins", sans-serif; font-weight: 400; font-style: normal; }
+.poppins-medium { font-family: "Poppins", sans-serif; font-weight: 500; font-style: normal; }
+.poppins-semibold { font-family: "Poppins", sans-serif; font-weight: 600; font-style: normal; }
+.poppins-bold { font-family: "Poppins", sans-serif; font-weight: 700; font-style: normal; }
+.poppins-extrabold { font-family: "Poppins", sans-serif; font-weight: 800; font-style: normal; }
+.poppins-black { font-family: "Poppins", sans-serif; font-weight: 900; font-style: normal; }
+
+.poppins-thin-italic { font-family: "Poppins", sans-serif; font-weight: 100; font-style: italic; }
+.poppins-extralight-italic { font-family: "Poppins", sans-serif; font-weight: 200; font-style: italic; }
+.poppins-light-italic { font-family: "Poppins", sans-serif; font-weight: 300; font-style: italic; }
+.poppins-regular-italic { font-family: "Poppins", sans-serif; font-weight: 400; font-style: italic; }
+.poppins-medium-italic { font-family: "Poppins", sans-serif; font-weight: 500; font-style: italic; }
+.poppins-semibold-italic { font-family: "Poppins", sans-serif; font-weight: 600; font-style: italic; }
+.poppins-bold-italic { font-family: "Poppins", sans-serif; font-weight: 700; font-style: italic; }
+.poppins-extrabold-italic { font-family: "Poppins", sans-serif; font-weight: 800; font-style: italic; }
+.poppins-black-italic { font-family: "Poppins", sans-serif; font-weight: 900; font-style: italic; }
+
+/* Variable CSS Class helper for Pliant */
+.pliant-custom {
+  font-family: "Pliant", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+.pliant-thin { font-family: "Pliant", sans-serif; font-optical-sizing: auto; font-weight: 100; font-style: normal; font-variation-settings: "wdth" 100; }
+.pliant-light { font-family: "Pliant", sans-serif; font-optical-sizing: auto; font-weight: 300; font-style: normal; font-variation-settings: "wdth" 100; }
+.pliant-regular { font-family: "Pliant", sans-serif; font-optical-sizing: auto; font-weight: 400; font-style: normal; font-variation-settings: "wdth" 100; }
+.pliant-medium { font-family: "Pliant", sans-serif; font-optical-sizing: auto; font-weight: 500; font-style: normal; font-variation-settings: "wdth" 100; }
+.pliant-semibold { font-family: "Pliant", sans-serif; font-optical-sizing: auto; font-weight: 600; font-style: normal; font-variation-settings: "wdth" 100; }
+.pliant-bold { font-family: "Pliant", sans-serif; font-optical-sizing: auto; font-weight: 700; font-style: normal; font-variation-settings: "wdth" 100; }
+.pliant-black { font-family: "Pliant", sans-serif; font-optical-sizing: auto; font-weight: 900; font-style: normal; font-variation-settings: "wdth" 100; }
+
+/* --- METICULOUS DEEP HARMONY LIGHT THEME --- */
+html.light, 
+html.light body,
+.light, 
+.light body {
+  background-color: #f8f6f2 !important; /* Elegant light sandalwood cream background */
+  color: #1c1917 !important; /* Deep charcoal for elegant, soft high contrast */
+}
+
+/* Page wrapper background overrides */
+.light #main-root-workspace {
+  background-color: #fcfaf7 !important;
+  color: #1e1b18 !important;
+}
+
+/* Header customization for light mode */
+.light header {
+  background-color: rgba(254, 252, 248, 0.95) !important;
+  border-color: rgba(216, 74, 0, 0.16) !important;
+  box-shadow: 0 4px 30px rgba(120, 50, 10, 0.05) !important;
+}
+
+/* Navigation links */
+.light header h1 {
+  background-image: linear-gradient(to right, #b45309, #ea580c) !important; /* Warm star/sunset tones */
+}
+
+.light nav button,
+.light header nav a,
+.light header button:not(.bg-gradient-to-r) {
+  color: #443e38 !important;
+}
+
+.light nav button:hover,
+.light header button:not(.bg-gradient-to-r):hover {
+  color: #ea580c !important;
+  background-color: rgba(249, 115, 22, 0.06) !important;
+}
+
+.light nav button.text-orange-400 {
+  color: #ea580c !important;
+  border-bottom-color: #ea580c !important;
+}
+
+/* ========================================================
+   UNIVERSAL WILDCARD BACKGROUND OVERRIDES FOR LIGHT THEME
+   Successfully overrides ALL dark tailwind hexes dynamically
+   ======================================================== */
+.light [class*="bg-[#0"],
+.light [class*="bg-[#1"],
+.light [class*="bg-[#2"],
+.light [class*="bg-[#30"],
+.light [class*="bg-[#35"],
+.light [class*="bg-[#0c0604]"],
+.light [class*="bg-[#0a0503]"],
+.light [class*="bg-[#0a0502]"],
+.light [class*="bg-[#0d0705]"],
+.light [class*="bg-[#0f0805]"],
+.light [class*="bg-[#120703]"],
+.light [class*="bg-[#050b16]"],
+.light [class*="bg-gray-950"],
+.light [class*="bg-slate-950"],
+.light [class*="bg-stone-950"],
+.light [class*="bg-zinc-950"],
+.light [class*="bg-neutral-950"],
+.light [class*="bg-black"],
+.light .bg-black,
+.light .bg-gray-950,
+.light .bg-slate-950 {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+  border-color: rgba(234, 88, 12, 0.16) !important;
+  box-shadow: 0 4px 18px rgba(120, 50, 10, 0.03), 0 1px 4px rgba(120, 50, 10, 0.01) !important;
+}
+
+/* Secondary softer containers - e.g. input fields or notes overlays */
+.light input[class*="bg-[#"],
+.light select[class*="bg-[#"],
+.light textarea[class*="bg-[#"],
+.light [class*="bg-[#0a0502]/60"],
+.light [class*="bg-[#0a0502]/85"],
+.light [class*="bg-[#0a0502]/90"],
+.light [class*="bg-[#0a0502]/95"],
+.light [class*="bg-[#0c0604]/90"],
+.light [class*="bg-[#0c0604]/80"],
+.light [class*="bg-[#120703]/40"] {
+  background-color: #fdfaf6 !important; /* Creamy off-white container */
+  color: #2e2a25 !important;
+  border-color: rgba(234, 88, 12, 0.2) !important;
+}
+
+/* High Contrast text elements mapping light-text to deep sandalwood-charcoals */
+.light [class*="text-gray-100"],
+.light [class*="text-gray-150"],
+.light [class*="text-gray-200"],
+.light [class*="text-gray-300"],
+.light [class*="text-zinc-150"],
+.light [class*="text-zinc-200"],
+.light [class*="text-zinc-300"],
+.light [class*="text-stone-300"],
+.light [class*="text-slate-300"],
+.light [class*="text-slate-200"],
+.light .text-white,
+.light .text-gray-100,
+.light .text-gray-200,
+.light .text-gray-300 {
+  color: #24201c !important; /* Rich readable soft black */
+}
+
+/* Muted subtitles/descriptions */
+.light [class*="text-gray-400"],
+.light [class*="text-gray-450"],
+.light [class*="text-gray-500"],
+.light [class*="text-zinc-400"],
+.light [class*="text-stone-400"],
+.light [class*="text-slate-400"],
+.light .text-gray-400,
+.light .text-gray-450,
+.light .text-gray-500 {
+  color: #5c554e !important; /* Clean sandalwood grey */
+}
+
+/* Active primary highlights */
+.light .text-orange-400,
+.light [class*="text-orange-400"],
+.light .text-\[\#ea580c\],
+.light .text-\[\#f97316\] {
+  color: #d84500 !important; /* Professional high-contrast terracotta */
+}
+
+.light .text-amber-400,
+.light .text-amber-500,
+.light [class*="text-amber-450"],
+.light .text-\[\#ca8a04\] {
+  color: #9f6107 !important; /* Grounded high-contrast gold */
+}
+
+/* Under light mode, icons that have light gray/orange colors become rich dark brown */
+.light .text-gray-400 svg,
+.light .text-orange-400 svg {
+  color: #7c2d12 !important; /* High contrast sienna tone */
+}
+
+/* Border overrides */
+.light [class*="border-orange-500"],
+.light [class*="border-gray-800"],
+.light [class*="border-gray-850"],
+.light [class*="border-white/5"],
+.light .border-orange-500\/10,
+.light .border-orange-500\/15,
+.light .border-orange-500\/20,
+.light .border-orange-500\/30,
+.light .border-orange-500\/40,
+.light .border-gray-800,
+.light .border-gray-750,
+.light .border-gray-850 {
+  border-color: rgba(216, 74, 0, 0.16) !important;
+}
+
+/* Glowing shadows */
+.light .sacred-glow {
+  box-shadow: 0 4px 25px rgba(216, 74, 0, 0.05), 0 1px 3px rgba(216, 74, 0, 0.02) !important;
+}
+.light .gold-glow {
+  box-shadow: 0 4px 28px rgba(161, 98, 7, 0.04) !important;
+}
+
+/* Primary/Sacred buttons gradient with responsive lighting contrast */
+.light .bg-gradient-to-r.from-orange-600.to-amber-500 {
+  background-image: linear-gradient(to right, #df4a00, #d97706) !important;
+  color: #ffffff !important;
+}
+.light .bg-gradient-to-r.from-orange-600.to-amber-500 * {
+  color: #ffffff !important;
+}
+
+/* Form, Inputs, Select, Textarea state handling */
+.light input,
+.light select,
+.light textarea {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+  border: 1px solid rgba(216, 74, 0, 0.22) !important;
+}
+.light input:focus,
+.light select:focus,
+.light textarea:focus {
+  border-color: #df4a00 !important;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(223, 74, 0, 0.08) !important;
+}
+.light input::placeholder,
+.light textarea::placeholder {
+  color: #928b80 !important;
+}
+
+/* Modals & Dialog backgrounds overlay */
+.light .fixed.inset-0.bg-black\/80,
+.light .fixed.inset-0.bg-\[\#080402\]\/90 {
+  background-color: rgba(28, 25, 23, 0.5) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Hero elements and banner sections mapping */
+.light .bg-gradient-to-b.from-\[\#140703\].via-\[\#090503\].to-\[\#060302\] {
+  background-image: linear-gradient(to bottom, #fdf7f1, #f8f6f2) !important;
+  border-bottom: 1px solid rgba(216, 74, 0, 0.12) !important;
+}
+
+.light #branding-hero {
+  background-image: linear-gradient(to bottom, #fdf8f4, #f8f6f2) !important;
+}
+
+/* Image Gradients and Contrast Overlays for light mode:
+   Converts dark black gradients on images to premium deep sienna/terracotta tone */
+.light [class*="bg-gradient-to-t"].from-black,
+.light [class*="bg-gradient-to-t"].from-black\/80,
+.light [class*="bg-gradient-to-t"].from-black\/85 {
+  background-image: linear-gradient(to top, rgba(74, 30, 8, 0.95) 0%, rgba(74, 30, 8, 0.4) 60%, transparent 100%) !important;
+}
+.light [class*="bg-gradient-to-t"].from-black * {
+  color: #ffffff !important; /* Ensure overlay description text inside cards remains crisp white and legible */
+}
+
+/* Interactive custom card lists hover */
+.light .hover\:scale-\[1\.01\]:hover,
+.light [class*="hover:border-orange-500"]:hover {
+  background-color: #ffffff !important;
+  border-color: #df4a00 !important;
+  box-shadow: 0 6px 24px rgba(216, 74, 0, 0.08) !important;
+}
+
+/* Custom card component specific overrides */
+.light .bg-orange-950\/20 {
+  background-color: #fef5ea !important;
+  color: #d14600 !important;
+}
+.light .bg-orange-950\/20 .text-orange-400 {
+  color: #d14600 !important;
+}
+
+/* Sub-panels and sidebars spacing color adjustments */
+.light aside {
+  background-color: #f9f7f2 !important;
+  border-right: 1px solid rgba(216, 74, 0, 0.14) !important;
+}
+
+/* Celestial canvas particle scaling down for light mode */
+.light canvas {
+  opacity: 0.14 !important;
+  mix-blend-mode: multiply;
+}
+
+/* Special scrollbar colors for light mode */
+.light ::-webkit-scrollbar-track {
+  background: #f8f6f2;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(216, 74, 0, 0.22);
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #b45309;
+}
+
+/* --- COMPREHENSIVE LIGHT THEME OVERRIDES FOR CONTRAST AND RESOLVING TOGGLE BUGS --- */
+
+/* 1. Universal Gradient Stop overrides: Converts dark gradients to pure white or light cream */
+.light [class*="from-[#0"],
+.light [class*="from-[#1"],
+.light [class*="from-[#2"],
+.light [class*="from-[#3"],
+.light [class*="from-gray-"],
+.light [class*="from-slate-"],
+.light [class*="from-zinc-"],
+.light [class*="from-stone-"],
+.light [class*="from-neutral-"],
+.light [class*="from-black"],
+.light [class*="from-blue-"],
+.light [class*="from-indigo-"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+}
+
+/* 2. Text Gradient High Contrast mapping: turns transparent yellow/gold text gradients to sienna/terracotta */
+.light .text-transparent.bg-clip-text,
+.light [class*="text-transparent"][class*="bg-clip-text"] {
+  background-image: linear-gradient(to right, #7c2d12, #c2410c) !important;
+  color: transparent !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+/* 3. Dropdowns inside header: light background and clean hover states */
+.light header div[class*="bg-[#"] {
+  background-color: #ffffff !important;
+  border-color: rgba(216, 74, 0, 0.16) !important;
+  box-shadow: 0 10px 30px rgba(120, 50, 10, 0.08) !important;
+}
+.light header div[class*="bg-[#"] button {
+  color: #443e38 !important;
+}
+.light header div[class*="bg-[#"] button:hover {
+  background-color: rgba(249, 115, 22, 0.06) !important;
+  color: #ea580c !important;
+}
+
+/* 4. Secondary Nested Containers / Dashboard Cards */
+.light [class*="bg-[#0a0503]"],
+.light [class*="bg-[#070302]"],
+.light [class*="bg-[#050201]"],
+.light [class*="bg-[#090403]"],
+.light [class*="bg-[#060302]"],
+.light [class*="bg-[#050201]"],
+.light [class*="bg-[#030101]"],
+.light [class*="bg-[#0c0604]"],
+.light [class*="bg-[#120703]"],
+.light [class*="bg-[#0b0c10]"],
+.light [class*="bg-[#1c0d0a]"],
+.light [class*="bg-gray-"],
+.light [class*="bg-slate-"],
+.light [class*="bg-zinc-"],
+.light [class*="bg-stone-"],
+.light [class*="bg-neutral-"],
+.light .bg-gray-900,
+.light .bg-gray-950,
+.light .bg-slate-900,
+.light .bg-slate-950 {
+  background-color: #fdf8f2 !important; /* Elegant warm cream */
+  color: #24201c !important;
+  border-color: rgba(216, 74, 0, 0.16) !important;
+}
+
+/* 5. Override hover classes in light mode to use soft orange tint backgrounds */
+.light [class*="hover:bg-orange-950/"]:hover,
+.light [class*="hover:bg-[#"]:hover,
+.light [class*="hover:bg-gray-900/"]:hover,
+.light [class*="hover:bg-gray-950/"]:hover,
+.light [class*="hover:bg-gray-800/"]:hover,
+.light button[class*="hover:bg-orange-950/"]:hover,
+.light button[class*="hover:bg-gray-900/"]:hover {
+  background-color: rgba(234, 88, 12, 0.06) !important;
+  color: #ea580c !important;
+}
+
+/* 6. Form elements and inputs specificity override */
+.light input[class*="bg-"],
+.light select[class*="bg-"],
+.light textarea[class*="bg-"],
+.light input,
+.light select,
+.light textarea {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+  border: 1px solid rgba(216, 74, 0, 0.22) !important;
+}
+
+/* 7. Color-specific text and badge high-contrast overrides */
+.light .text-purple-400,
+.light [class*="text-purple-400"] {
+  color: #7e22ce !important;
+}
+.light .text-blue-400,
+.light [class*="text-blue-400"] {
+  color: #1d4ed8 !important;
+}
+.light .text-emerald-400,
+.light [class*="text-emerald-400"] {
+  color: #047857 !important;
+}
+.light .text-red-400,
+.light [class*="text-red-400"] {
+  color: #b91c1c !important;
+}
+.light .text-orange-400,
+.light [class*="text-orange-400"],
+.light .text-\[\#ea580c\],
+.light .text-\[\#f97316\] {
+  color: #d84500 !important;
+}
+.light .text-amber-400,
+.light .text-amber-500,
+.light [class*="text-amber-450"],
+.light .text-\[\#ca8a04\] {
+  color: #9f6107 !important;
+}
+
+/* 8. Target Gold (#D4AF37) class styles (borders, text, bg) used for active highlights */
+.light .text-\[\#D4AF37\],
+.light [class*="text-[#D4AF37]"] {
+  color: #b45309 !important; /* Grounded warm sienna gold */
+}
+.light .border-\[\#D4AF37\],
+.light [class*="border-[#D4AF37]"] {
+  border-color: rgba(180, 83, 9, 0.4) !important;
+}
+.light .bg-\[\#D4AF37\],
+.light [class*="bg-[#D4AF37]"] {
+  background-color: #b45309 !important;
+  color: #ffffff !important;
+}
+
+/* 9. Sidebar navigation active tab styling */
+.light aside button[class*="text-[#D4AF37]"],
+.light [class*="active"] button[class*="text-[#D4AF37]"],
+.light button[class*="text-[#D4AF37]"][class*="bg-[#1b1c18]"] {
+  background-color: rgba(234, 88, 12, 0.08) !important;
+  color: #d84500 !important;
+  border-color: rgba(216, 74, 0, 0.3) !important;
+}
+.light aside button[class*="text-[#D4AF37]"] svg,
+.light [class*="active"] button[class*="text-[#D4AF37]"] svg {
+  color: #d84500 !important;
+}
+
+/* 10. Muted colors for colored overlays under light mode */
+.light [class*="bg-orange-950/"] {
+  background-color: rgba(234, 88, 12, 0.06) !important;
+}
+.light [class*="bg-purple-950/"] {
+  background-color: rgba(147, 51, 234, 0.06) !important;
+}
+.light [class*="bg-blue-950/"] {
+  background-color: rgba(37, 99, 235, 0.06) !important;
+}
+.light [class*="bg-emerald-950/"] {
+  background-color: rgba(5, 150, 105, 0.06) !important;
+}
+.light [class*="bg-red-950/"] {
+  background-color: rgba(220, 38, 38, 0.06) !important;
+}
+
+/* --- PREMIUM STYLISH NAVBAR & HEADER INTERACTION STYLES --- */
+
+/* 1. Global Navigation Bar Transition & Shadow adjustments */
+header {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+.light header {
+  box-shadow: 0 4px 25px rgba(120, 50, 10, 0.04) !important;
+}
+
+/* 2. Interactive Logo hover effect */
+#brand-logo > div:first-child {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease !important;
+}
+#brand-logo:hover > div:first-child {
+  transform: scale(1.08) rotate(5deg) !important;
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.6) !important;
+}
+
+/* 3. Sleek Active Underline Indicators */
+header nav button,
+header nav a {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+header nav button[class*="border-b-2"],
+header nav a[class*="border-b-2"] {
+  border-bottom: none !important;
+  color: #ea580c !important;
+}
+.light header nav button[class*="border-b-2"] {
+  color: #d84500 !important;
+}
+header nav button[class*="border-b-2"]::after,
+header nav a[class*="border-b-2"]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 12%;
+  right: 12%;
+  height: 2px;
+  background: linear-gradient(to right, #ea580c, #f59e0b) !important;
+  border-radius: 9999px !important;
+  box-shadow: 0 1px 6px rgba(234, 88, 12, 0.4) !important;
+}
+
+/* 4. Glassmorphic Pill background for profile button and header icons */
+#profile-dropdown-btn {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background-color: rgba(234, 88, 12, 0.04) !important;
+  border: 1px solid rgba(234, 88, 12, 0.1) !important;
+}
+#profile-dropdown-btn:hover {
+  background-color: rgba(234, 88, 12, 0.08) !important;
+  border-color: rgba(234, 88, 12, 0.25) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.06) !important;
+}
+.light #profile-dropdown-btn p {
+  color: #24201c !important;
+}
+
+/* 5. Icons and toggle buttons hover interactions */
+header button[id="theme-toggle-btn"],
+header button[id="notif-bell-btn"],
+header button[title="Spiritual Basket"] {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+header button[id="theme-toggle-btn"]:hover,
+header button[id="notif-bell-btn"]:hover,
+header button[title="Spiritual Basket"]:hover {
+  background-color: rgba(234, 88, 12, 0.08) !important;
+  border-color: rgba(234, 88, 12, 0.3) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 6. Explores Webinars Primary Button micro-interaction */
+header button.bg-gradient-to-r {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+header button.bg-gradient-to-r:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 18px rgba(234, 88, 12, 0.3) !important;
+  filter: brightness(1.05) !important;
+}
+header button.bg-gradient-to-r:active {
+  transform: translateY(1px) !important;
+}
+
+/* 7. Dropdown lists animated reveal */
+header .group-hover\:block {
+  display: none !important;
+}
+header .group:hover > div[class*="absolute"] {
+  display: block !important;
+  animation: navDropdownReveal 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  transform-origin: top left !important;
+}
+@keyframes navDropdownReveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 8. Light mode dropdown card text color readability */
+.light header div[class*="absolute"] button {
+  color: #443e38 !important;
+}
+.light header div[class*="absolute"] button:hover {
+  color: #ea580c !important;
+  background-color: rgba(249, 115, 22, 0.06) !important;
+}
+
+
+/* --- PREMIUM HOME PAGE OVERRIDES & TRADITIONAL-ANCIENT-MODERN DESIGN SYSTEM --- */
+#beautiful-gurukul-home {
+  --sacred-gold-alpha: rgba(234, 179, 8, 0.08);
+  --sacred-orange-alpha: rgba(249, 115, 22, 0.06);
+}
+
+/* Yantra Sacred Geometric Grid Background for Hero Section */
+#beautiful-gurukul-home #hero-section {
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(234, 88, 12, 0.08) 0%, transparent 75%) !important;
+  background-color: transparent !important;
+  position: relative;
+}
+.light #beautiful-gurukul-home #hero-section {
+  background-image: 
+    radial-gradient(circle at 50% 30%, rgba(234, 88, 12, 0.04) 0%, transparent 80%) !important;
+  background-color: transparent !important;
+}
+
+#beautiful-gurukul-home #hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(circle at 50% 50%, transparent 0%, transparent 18%, rgba(234, 88, 12, 0.02) 19%, rgba(234, 88, 12, 0.02) 20%, transparent 21%),
+    radial-gradient(circle at 50% 50%, transparent 0%, transparent 38%, rgba(234, 88, 12, 0.015) 39%, rgba(234, 88, 12, 0.015) 40%, transparent 41%),
+    radial-gradient(circle at 50% 50%, transparent 0%, transparent 58%, rgba(234, 88, 12, 0.01) 59%, rgba(234, 88, 12, 0.015) 60%, transparent 61%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Softer transparent grids for other home page banners so the fixed canvas shows through */
+#beautiful-gurukul-home section[class*="bg-gradient-to-b from-[#0a0503]"] {
+  background-image: linear-gradient(to bottom, rgba(10, 5, 3, 0.4), rgba(4, 2, 1, 0.4)) !important;
+  background-color: transparent !important;
+}
+.light #beautiful-gurukul-home section[class*="bg-gradient-to-b from-[#0a0503]"] {
+  background-image: none !important;
+  background-color: transparent !important;
+  border-color: rgba(216, 74, 0, 0.08) !important;
+}
+
+#beautiful-gurukul-home section[class*="bg-gradient-to-r from-[#0c0604]"] {
+  background-image: linear-gradient(to right, rgba(12, 6, 4, 0.45), rgba(15, 8, 5, 0.45), rgba(12, 6, 4, 0.45)) !important;
+  background-color: transparent !important;
+}
+.light #beautiful-gurukul-home section[class*="bg-gradient-to-r from-[#0c0604]"] {
+  background-image: none !important;
+  background-color: #fdf8f2 !important;
+  border-color: rgba(216, 74, 0, 0.16) !important;
+}
+
+
+/* Astrological Pulsating Elements */
+#beautiful-gurukul-home .animate-spin-slow {
+  animation: spin-slow 35s linear infinite !important;
+}
+@keyframes sacredPulse {
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50% { transform: scale(1.04); opacity: 0.45; }
+}
+#beautiful-gurukul-home #hero-section .rounded-full.border-orange-500\/20 {
+  animation: spin-slow 40s linear infinite, sacredPulse 8s ease-in-out infinite !important;
+}
+
+/* Crisp & Premium Typography */
+#beautiful-gurukul-home p {
+  font-size: 13px !important;
+  line-height: 1.75 !important;
+  letter-spacing: 0.025em !important;
+  color: #c8c8c8 !important;
+  font-weight: 300 !important;
+}
+.light #beautiful-gurukul-home p {
+  color: #4a453f !important;
+  font-weight: 400 !important;
+}
+
+#beautiful-gurukul-home h1, 
+#beautiful-gurukul-home h1 span,
+#beautiful-gurukul-home h2, 
+#beautiful-gurukul-home h3, 
+#beautiful-gurukul-home h4,
+#beautiful-gurukul-home .font-serif {
+  font-family: "Playfair Display", "Cinzel", "Marcellus", "Georgia", serif !important;
+  letter-spacing: 0.015em !important;
+}
+
+/* Spaced out uppercase tags to feel modern-ancient and clean */
+#beautiful-gurukul-home span[class*="font-mono"] {
+  font-size: 9.5px !important;
+  letter-spacing: 0.15em !important;
+  font-family: "JetBrains Mono", monospace !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+}
+
+/* Publications logo styling */
+#beautiful-gurukul-home section[class*="bg-[#0c0604]/80 py-6"] {
+  background-color: rgba(12, 6, 4, 0.6) !important;
+  border-color: rgba(234, 88, 12, 0.12) !important;
+}
+.light #beautiful-gurukul-home section[class*="bg-[#0c0604]/80 py-6"] {
+  background-color: #fcfaf7 !important;
+  border-color: rgba(216, 74, 0, 0.16) !important;
+}
+#beautiful-gurukul-home section[class*="bg-[#0c0604]/80 py-6"] span {
+  font-family: "Marcellus", serif !important;
+  letter-spacing: 0.12em !important;
+  background-color: rgba(234, 88, 12, 0.04) !important;
+  border: 1px solid rgba(234, 88, 12, 0.08) !important;
+  transition: all 0.3s ease !important;
+}
+#beautiful-gurukul-home section[class*="bg-[#0c0604]/80 py-6"] span:hover {
+  background-color: rgba(234, 88, 12, 0.1) !important;
+  border-color: rgba(234, 88, 12, 0.25) !important;
+  color: #f97316 !important;
+}
+
+/* Universal Premium Cards Styling */
+#beautiful-gurukul-home .webinar-card,
+#beautiful-gurukul-home .course-card,
+#beautiful-gurukul-home .tool-card,
+#beautiful-gurukul-home .testimonial-card {
+  background-color: rgba(12, 6, 4, 0.75) !important;
+  border: 1px solid rgba(249, 115, 22, 0.12) !important;
+  backdrop-filter: blur(10px) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.light #beautiful-gurukul-home .webinar-card,
+.light #beautiful-gurukul-home .course-card,
+.light #beautiful-gurukul-home .tool-card,
+.light #beautiful-gurukul-home .testimonial-card {
+  background-color: #ffffff !important;
+  border-color: rgba(216, 74, 0, 0.15) !important;
+  box-shadow: 0 8px 30px rgba(120, 50, 10, 0.04) !important;
+}
+
+#beautiful-gurukul-home .webinar-card:hover,
+#beautiful-gurukul-home .course-card:hover,
+#beautiful-gurukul-home .tool-card:hover,
+#beautiful-gurukul-home .testimonial-card:hover {
+  transform: translateY(-6px) !important;
+  border-color: rgba(249, 115, 22, 0.45) !important;
+  box-shadow: 0 12px 30px rgba(249, 115, 22, 0.08) !important;
+}
+
+.light #beautiful-gurukul-home .webinar-card:hover,
+.light #beautiful-gurukul-home .course-card:hover,
+.light #beautiful-gurukul-home .tool-card:hover,
+.light #beautiful-gurukul-home .testimonial-card:hover {
+  box-shadow: 0 15px 35px rgba(216, 74, 0, 0.08) !important;
+  border-color: rgba(216, 74, 0, 0.3) !important;
+}
+
+/* Success Stories/Testimonials Layout Optimization */
+#beautiful-gurukul-home .testimonial-card {
+  height: 250px !important;
+  overflow: hidden !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+
+#beautiful-gurukul-home .testimonial-card .testimonial-text {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 4 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  font-size: 12px !important;
+  line-height: 1.65 !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Smooth expansion of testimonial on hover */
+#beautiful-gurukul-home .testimonial-card:hover {
+  height: auto !important;
+  min-height: 250px !important;
+  z-index: 20 !important;
+}
+
+#beautiful-gurukul-home .testimonial-card:hover .testimonial-text {
+  -webkit-line-clamp: 15 !important;
+  color: #ffffff !important;
+}
+.light #beautiful-gurukul-home .testimonial-card:hover .testimonial-text {
+  color: #1c1917 !important;
+}
+
+/* Mentors Row Styling */
+#beautiful-gurukul-home .mentor-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(249, 115, 22, 0.12) !important;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+#beautiful-gurukul-home .mentor-card:hover {
+  transform: scale(1.02) translateY(-4px) !important;
+  border-color: rgba(249, 115, 22, 0.4) !important;
+  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.08) !important;
+}
+#beautiful-gurukul-home .mentor-image {
+  filter: grayscale(85%) contrast(1.1) brightness(0.85) !important;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+#beautiful-gurukul-home .mentor-card:hover .mentor-image {
+  filter: grayscale(0%) contrast(1.05) brightness(0.95) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Footer Section Styling */
+#beautiful-gurukul-home footer {
+  background-color: #070302 !important;
+  border-top-color: rgba(249, 115, 22, 0.12) !important;
+}
+.light #beautiful-gurukul-home footer {
+  background-color: #f7f4ed !important;
+  border-top-color: rgba(216, 74, 0, 0.16) !important;
+}
+#beautiful-gurukul-home footer h5 {
+  letter-spacing: 0.15em !important;
+  color: #f97316 !important;
+}
+#beautiful-gurukul-home footer a,
+#beautiful-gurukul-home footer button {
+  transition: all 0.25s ease !important;
+}
+#beautiful-gurukul-home footer button:hover {
+  color: #ea580c !important;
+  padding-left: 2px !important;
+}
+
+/* Slide arrows & indicators styling overrides */
+#beautiful-gurukul-home #hero-section button {
+  cursor: pointer;
+}
+#beautiful-gurukul-home #hero-section button:hover {
+  transform: scale(1.08) translateY(-50%);
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+#beautiful-gurukul-home #hero-section button:active {
+  transform: scale(0.96) translateY(-50%);
+}
+
+/* Floating Widgets Overlay */
+a[href*="wa.me"],
+button[title="Live Help Chat"] {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+a[href*="wa.me"]:hover,
+button[title="Live Help Chat"]:hover {
+  transform: scale(1.15) translateY(-2px) !important;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4) !important;
+}
+a[href*="wa.me"]:active,
+button[title="Live Help Chat"]:active {
+  transform: scale(0.95) !important;
+}
+
+.light div.fixed div.bg-white.text-gray-800 {
+  background-color: #ffffff !important;
+  color: #1c1917 !important;
+  box-shadow: 0 4px 20px rgba(120, 50, 10, 0.08) !important;
+  border-color: rgba(216, 74, 0, 0.1) !important;
+}
+div.fixed div.bg-white.text-gray-800 {
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: #0c0604 !important;
+  color: #f3f4f6 !important;
+}
+
+
+
