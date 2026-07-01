@@ -47,10 +47,17 @@ function getGemini(): GoogleGenAI {
   return aiClient;
 }
 
+import authRoutes from './src/api/authRoutes';
+import coursesRoutes from './src/api/coursesRoutes';
+
 const app = express();
 app.use(express.json());
 
-const PORT = 3000;
+// Mount the new SQLite-based routes
+app.use('/api/auth', authRoutes);
+app.use('/api/courses_v2', coursesRoutes);
+
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3005;
 
 // ==========================================
 // FIREBASE / FIRESTORE SCHEMAS & UTILITIES

@@ -67,6 +67,7 @@ export interface Course {
   title: string;
   description: string;
   category: string;
+  duration?: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   thumbnail: string;
   price: number;

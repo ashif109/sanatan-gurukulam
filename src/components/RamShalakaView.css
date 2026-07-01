@@ -1,0 +1,22 @@
+.grid-cols-15 {
+  grid-template-columns: repeat(15, minmax(0, 1fr));
+}
+
+.ram-shalaka-container {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(249, 115, 22, 0.8);
+  }
+}
+
+.starting-cell {
+  animation: pulse-glow 2s infinite;
+}

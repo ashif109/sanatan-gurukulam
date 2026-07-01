@@ -7,6 +7,8 @@ import {
 } from 'lucide-react';
 
 import Header from './components/Header';
+import AuthModal from './components/AuthModal';
+import { useAuthStore } from './store/authStore';
 import ThreeCelestialCanvas from './components/ThreeCelestialCanvas';
 import AITutorPanel from './components/AITutorPanel';
 import QuizSystem from './components/QuizSystem';
@@ -60,25 +62,38 @@ export default function App() {
   };
 
   // USER PROFILE & ROLE MANAGEMENT
+  const { user: authUser } = useAuthStore();
   const [currentUser, setCurrentUser] = useState<UserProfile>({
-    id: "user-student",
-    name: "Ashif Ansari",
-    email: "ashifansari04704@gmail.com",
+    id: "guest",
+    name: "Guest",
+    email: "",
     role: "student",
-    avatarUrl: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=120&auto=format&fit=crop&q=80",
-    wishlist: ["course-2"],
-    certificates: [
-      {
-        id: "cert-999",
-        courseId: "course-1",
-        courseTitle: "Vedic Astrology Foundation (Parashari Method)",
-        studentName: "Ashif Ansari",
-        issuedAt: "2026-06-18T10:00:00Z",
-        verificationUrl: "/verify/cert-999"
-      }
-    ],
-    createdAt: "2026-01-01T00:00:00Z"
+    avatarUrl: "",
+    wishlist: [],
+    certificates: [],
+    createdAt: new Date().toISOString()
   });
+
+  useEffect(() => {
+    if (authUser) {
+      setCurrentUser(authUser);
+      // Automatically navigate to dashboard upon login
+      if (authUser.role === 'admin' || authUser.role === 'super_admin') setActiveTab('admin-panel');
+      else if (authUser.role === 'instructor') setActiveTab('instructor-panel');
+      else setActiveTab('student-portal');
+    } else {
+      setCurrentUser({
+        id: "guest",
+        name: "Guest",
+        email: "",
+        role: "student",
+        avatarUrl: "",
+        wishlist: [],
+        certificates: [],
+        createdAt: new Date().toISOString()
+      });
+    }
+  }, [authUser]);
 
   // CORE DATA STATE
   const [courses, setCourses] = useState<Course[]>([]);
@@ -786,6 +801,7 @@ export default function App() {
 
   return (
     <div className={`min-h-screen ${theme === 'light' ? 'bg-[#f8f6f2] text-stone-850' : 'bg-[#060302] text-gray-150'} flex flex-col font-sans antialiased selection:bg-orange-600/30 selection:text-white`} id="main-root-workspace">
+        <AuthModal />
       
       {/* Top Professional Header */}
       <Header
@@ -805,14 +821,14 @@ export default function App() {
 
       {/* Hero Header Space on Explore tab with beautiful sacred theme */}
       {activeTab === 'explore' && !selectedCourse && (
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#140703] via-[#090503] to-[#060302] border-b border-orange-500/10 py-16 sm:py-20 px-4 sm:px-6 text-center" id="branding-hero select-none">
+        <section className="w-full relative overflow-hidden bg-[var(--color-occult-purple)] border-b border-purple-900/20  sm:py-20  sm:px-6 text-center" id="branding-hero select-none">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full pointer-events-none overflow-hidden">
             <div className="absolute top-10 left-1/4 w-96 h-96 rounded-full bg-orange-600/5 blur-3xl animate-pulse"></div>
             <div className="absolute bottom-10 right-1/4 w-96 h-96 rounded-full bg-amber-500/5 blur-3xl animate-pulse"></div>
           </div>
 
           <div className="max-w-4xl mx-auto relative z-10">
-            <div className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-orange-950/20 hover:bg-orange-950/30 border border-orange-500/20 rounded-full text-xs font-serif font-bold text-orange-400 mb-6 shadow-md shadow-orange-950/10">
+            <div className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full text-xs font-serif font-bold text-[#c4a9ff] mb-6 shadow-md shadow-purple-900/10">
               <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
               <span>
                 {language === 'hi' ? 'संकल्प एआई-संचालित पवित्र शिक्षा डेस्क' : 
@@ -827,24 +843,24 @@ export default function App() {
                <>Vedic Education Curriculum. <br /><span className="bg-gradient-to-r from-amber-400 via-orange-500 to-yellow-500 bg-clip-text text-transparent underline decoration-orange-500 decoration-wavy underline-offset-8">Explore Traditional Shastras.</span></>}
             </h2>
 
-            <p className="text-gray-450 max-w-2xl mx-auto text-xs sm:text-sm font-serif leading-relaxed mb-10 text-gray-300">
+            <p className="text-gray-200 max-w-2xl mx-auto text-xs sm:text-sm font-serif leading-relaxed mb-10">
               {language === 'hi' ? 'पारंपरिक गुरुकुल बोर्डों द्वारा सत्यापित प्रमाणपत्र अर्जित करें। संकल्प गुरु स्वचालित शंका समाधान, श्लोक व्याख्या और डिजिटल मूल्यांकन के साथ ज्ञान यात्रा को गति दें।' : 
                language === 'sa' ? 'पारम्परिक-गुरुकुल-बोर्ड-द्वारा सत्यापितप्रमाणपत्राणि प्राप्नुत। सङ्कल्प-गुरु-स्वचालित-शङ्कानिवारण-श्लोकव्याख्या-मूल्याङ्कनैः सह ज्ञानयात्रां वर्धयन्तु।' : 
                'Earn certified lineage credentials verified by traditional gurukul boards. Accelerate your knowledge journey with Sankalp Guru automated doubts resolution, shloka breakdown and digital assessments.'}
             </p>
 
             {/* Quick dashboard shortcuts info */}
-            <div className="flex flex-wrap items-center justify-center gap-4 text-[10px] font-mono uppercase font-bold tracking-widest text-[#f97316]/65">
-              <div className="bg-[#0c0604]/80 border border-orange-500/10 px-4 py-2 rounded-xl flex items-center space-x-2">
-                <CheckCircle className="w-3.5 h-3.5 text-orange-400" />
+            <div className="flex flex-wrap items-center justify-center gap-4 text-[10px] font-mono uppercase font-bold tracking-widest text-purple-200/80">
+              <div className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-xl flex items-center space-x-2">
+                <CheckCircle className="w-3.5 h-3.5 text-[var(--color-occult-purple-light)]" />
                 <span>{language === 'hi' ? 'सिम्युलेटेड सूक्ष्म-लेनदेन' : language === 'sa' ? 'सिम्युलेटेड-सूक्ष्म-लेनदेनः' : 'Simulated Microtransactions'}</span>
               </div>
-              <div className="bg-[#0c0604]/80 border border-orange-500/10 px-4 py-2 rounded-xl flex items-center space-x-2">
+              <div className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-xl flex items-center space-x-2">
                 <Brain className="w-3.5 h-3.5 text-amber-500" />
                 <span>{language === 'hi' ? 'एआई संकल्प मेंटर' : language === 'sa' ? 'एआई-सङ्कल्प-मार्गदर्शकः' : 'AI Sankalp Mentor'}</span>
               </div>
-              <div className="bg-[#0c0604]/80 border border-orange-500/10 px-4 py-2 rounded-xl flex items-center space-x-2">
-                <Award className="w-3.5 h-3.5 text-orange-400" />
+              <div className="bg-white/10 border border-white/20 text-white px-4 py-2 rounded-xl flex items-center space-x-2">
+                <Award className="w-3.5 h-3.5 text-[var(--color-occult-purple-light)]" />
                 <span>{language === 'hi' ? 'सत्यापित डिजिटल डिग्री' : language === 'sa' ? 'सत्यापित-डिजिटल-उपाधिः' : 'Verified Digital Degree'}</span>
               </div>
             </div>
@@ -853,7 +869,7 @@ export default function App() {
       )}
 
       {/* Main Container */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 sm:px-6">
+      <main className={`flex-1 w-full ${activeTab !== 'home' ? 'max-w-7xl mx-auto px-4 py-8 sm:px-6' : ''}`}>
 
         {/* VIEW 0: SACRED HOME LANDING EXPERIENCE */}
         {activeTab === 'home' && (
@@ -882,7 +898,7 @@ export default function App() {
 
         {/* VIEW RAM SHALAKA PRASHNAVALI: SACRED REFLECTIVE DEVOTINAL RADAR */}
         {activeTab === 'ram-shalaka' && (
-          <RamShalakaView currentUser={currentUser} language={language} />
+          <RamShalakaView language={language} />
         )}
 
         {/* VIEW TAROT ORACLE: GUIDED REFLECTIVE ARCANA */}
@@ -912,8 +928,8 @@ export default function App() {
         {/* VIEW CERTIFICATION LADDER: CREDENTIAL REGISTRY */}
         {activeTab === 'certification-ladder' && (
           <div className="space-y-8 animate-in fade-in" id="certification-registry-deck">
-            <div className="border-b border-orange-500/10 pb-4 text-center max-w-xl mx-auto">
-              <span className="text-[10px] text-orange-400 font-serif font-bold uppercase tracking-widest block">Decentralized Academic Registry</span>
+            <div className="border-b border-gray-200 pb-4 text-center max-w-xl mx-auto">
+              <span className="text-[10px] text-[var(--color-occult-purple-light)] font-serif font-bold uppercase tracking-widest block">Decentralized Academic Registry</span>
               <h2 className="text-2xl sm:text-3xl font-bold font-serif text-amber-500 uppercase mt-1">Vedic Credentials Registry</h2>
               <p className="text-xs text-gray-400 mt-2 font-serif">A cryptographically secure database that preserves lineages and credentials verifications.</p>
             </div>
@@ -922,23 +938,23 @@ export default function App() {
               {currentUser.certificates.map(cert => (
                 <div 
                   key={cert.id} 
-                  className="bg-[#0c0604] border border-orange-500/15 hover:border-orange-500/30 rounded-2xl p-5 flex items-center justify-between gap-4 font-serif hover:scale-[1.01] transition-all cursor-pointer shadow-xl"
+                  className="bg-white border border-gray-200 hover:border-gray-300 rounded-2xl p-5 flex items-center justify-between gap-4 font-serif hover:scale-[1.01] transition-all cursor-pointer shadow-xl"
                   onClick={() => {
                     setActiveVerificationCert(cert);
                     setActiveTab('verification');
                   }}
                 >
                   <div className="flex items-center space-x-3.5 shrink overflow-hidden">
-                    <div className="bg-orange-950/20 p-2.5 rounded-xl border border-orange-500/20 text-orange-400 shrink-0">
-                      <Award className="w-5 h-5 text-orange-400 drop-shadow-[0_0_5px_rgba(249,115,22,0.3)]" />
+                    <div className="bg-orange-950/20 p-2.5 rounded-xl border border-orange-500/20 text-[var(--color-occult-purple-light)] shrink-0">
+                      <Award className="w-5 h-5 text-[var(--color-occult-purple-light)] drop-shadow-[0_0_5px_rgba(249,115,22,0.3)]" />
                     </div>
                     <div className="overflow-hidden">
-                      <h5 className="font-bold text-gray-200 text-xs truncate uppercase tracking-wide">{cert.courseTitle}</h5>
+                      <h5 className="font-bold text-gray-800 text-xs truncate uppercase tracking-wide">{cert.courseTitle}</h5>
                       <span className="text-[9px] text-[#f97316]/50 font-mono block mt-1">ID: SG-{cert.id.slice(5, 11) || "1208"} • Issued: {new Date(cert.issuedAt).toLocaleDateString()}</span>
                     </div>
                   </div>
 
-                  <button className="px-3 py-1.5 bg-[#120703] border border-orange-500/25 hover:bg-orange-950/10 text-orange-400 rounded-lg text-[10px] font-bold font-serif shrink-0 cursor-pointer flex items-center space-x-1.5 uppercase tracking-wider">
+                  <button className="px-3 py-1.5 bg-[#120703] border border-orange-500/25 hover:bg-orange-950/10 text-[var(--color-occult-purple-light)] rounded-lg text-[10px] font-bold font-serif shrink-0 cursor-pointer flex items-center space-x-1.5 uppercase tracking-wider">
                     <Eye className="w-3.5 h-3.5" />
                     <span>View Certificate</span>
                   </button>
@@ -955,10 +971,10 @@ export default function App() {
             {selectedCourseDetail ? (
               <div className="space-y-8 animate-in fade-in zoom-in-95 duration-200">
                 {/* Navigation Breadcrumb & Back action */}
-                <div className="flex items-center justify-between border-b border-orange-500/10 pb-4 text-left">
+                <div className="flex items-center justify-between border-b border-gray-200 pb-4 text-left">
                   <button
                     onClick={() => setSelectedCourseDetail(null)}
-                    className="group flex items-center space-x-2 text-xs text-orange-400 hover:text-orange-300 font-serif font-bold uppercase cursor-pointer"
+                    className="group flex items-center space-x-2 text-xs text-[var(--color-occult-purple-light)] hover:text-orange-300 font-serif font-bold uppercase cursor-pointer"
                   >
                     <span>← Back to Curriculum Catalog</span>
                   </button>
@@ -971,31 +987,31 @@ export default function App() {
                   {/* Left Column - Detailed profile */}
                   <div className="lg:col-span-7 space-y-6">
                     <div className="space-y-2 text-left">
-                      <span className="inline-block px-2.5 py-1 bg-orange-950/20 border border-orange-500/20 text-orange-400 rounded-full text-[9px] font-mono tracking-widest uppercase font-bold">
+                      <span className="inline-block px-2.5 py-1 bg-orange-950/20 border border-orange-500/20 text-[var(--color-occult-purple-light)] rounded-full text-[9px] font-mono tracking-widest uppercase font-bold">
                         {selectedCourseDetail.category}
                       </span>
                       <h2 className="text-2xl sm:text-3xl font-serif font-bold text-gray-100 uppercase leading-tight">
                         {selectedCourseDetail.title}
                       </h2>
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-450 font-serif">
-                        <span>Difficulty: <strong className="text-orange-400">{selectedCourseDetail.difficulty}</strong></span>
+                      <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 font-serif">
+                        <span>Difficulty: <strong className="text-[var(--color-occult-purple-light)]">{selectedCourseDetail.difficulty}</strong></span>
                         <span>•</span>
-                        <span>Instructor: <strong className="text-orange-400">{selectedCourseDetail.instructorName}</strong></span>
+                        <span>Instructor: <strong className="text-[var(--color-occult-purple-light)]">{selectedCourseDetail.instructorName}</strong></span>
                         <span>•</span>
-                        <span>Lessons: <strong className="text-orange-400">{selectedCourseDetail.chapters.reduce((sum, ch) => sum + ch.modules.length, 0)} modules</strong></span>
+                        <span>Lessons: <strong className="text-[var(--color-occult-purple-light)]">{selectedCourseDetail.chapters.reduce((sum, ch) => sum + ch.modules.length, 0)} modules</strong></span>
                       </div>
                     </div>
 
                     <img 
                       src={selectedCourseDetail.thumbnail} 
                       alt={selectedCourseDetail.title} 
-                      className="w-full h-80 object-cover rounded-2xl border border-orange-500/15 shadow-2xl"
+                      className="w-full h-80 object-cover rounded-2xl border border-gray-200 shadow-2xl"
                       referrerPolicy="no-referrer"
                     />
 
                     <div className="space-y-4 text-left">
-                      <h3 className="text-lg font-serif font-bold text-gray-200 uppercase tracking-widest border-b border-orange-500/10 pb-2">Sacred Insights & Objectives</h3>
-                      <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-sans whitespace-pre-line">
+                      <h3 className="text-lg font-serif font-bold text-gray-800 uppercase tracking-widest border-b border-gray-200 pb-2">Sacred Insights & Objectives</h3>
+                      <p className="text-xs sm:text-sm text-gray-700 leading-relaxed font-sans whitespace-pre-line">
                         {selectedCourseDetail.description || "Deepen your scriptural insights and build authenticated Sanatan knowledge channels under the strict offline guidance of verified gurus and pandits."}
                       </p>
                     </div>
@@ -1003,12 +1019,12 @@ export default function App() {
                     {/* Highlights */}
                     {selectedCourseDetail.highlights && selectedCourseDetail.highlights.length > 0 && (
                       <div className="space-y-3 text-left">
-                        <h4 className="text-xs uppercase text-orange-400 font-serif font-bold tracking-widest">Immersion Highlights</h4>
+                        <h4 className="text-xs uppercase text-[var(--color-occult-purple-light)] font-serif font-bold tracking-widest">Immersion Highlights</h4>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 font-sans">
                           {selectedCourseDetail.highlights.map((h, i) => (
                             <div key={i} className="flex items-center space-x-2 bg-[#120703]/40 border border-orange-500/5 p-2.5 rounded-xl">
                               <CheckCircle className="w-4 h-4 text-[#f97316] shrink-0" />
-                              <span className="text-xs text-gray-300">{h}</span>
+                              <span className="text-xs text-gray-700">{h}</span>
                             </div>
                           ))}
                         </div>
@@ -1017,7 +1033,7 @@ export default function App() {
 
                     {/* Demo Warning Segment */}
                     <div className="bg-gradient-to-r from-orange-950/20 to-amber-950/10 border border-orange-500/25 rounded-2xl p-4 text-left space-y-2">
-                      <h4 className="flex items-center space-x-2 text-xs font-serif font-bold text-orange-400 uppercase tracking-wider">
+                      <h4 className="flex items-center space-x-2 text-xs font-serif font-bold text-[var(--color-occult-purple-light)] uppercase tracking-wider">
                         <Sparkles className="w-4 h-4 text-amber-500" />
                         <span>7-Day Spiritual Access Trial (Free Demo Available)</span>
                       </h4>
@@ -1032,7 +1048,7 @@ export default function App() {
                   <div className="lg:col-span-5 space-y-6">
                     
                     {/* Action Hub */}
-                    <div className="bg-[#0c0604] border border-orange-500/15 rounded-2xl p-5 shadow-xl text-left space-y-4">
+                    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xl text-left space-y-4">
                       <div className="space-y-1">
                         <span className="text-[9px] text-[#f97316]/50 uppercase font-mono font-bold tracking-widest block">Complete Immersion License</span>
                         <div className="flex items-baseline space-x-2 font-serif">
@@ -1057,7 +1073,7 @@ export default function App() {
                               setCart(prev => [...prev, selectedCourseDetail]);
                               setIsCartOpen(true);
                             }}
-                            className="w-full py-3 bg-[#120703] border border-orange-500/35 hover:bg-orange-950/10 text-orange-400 rounded-xl font-medium uppercase tracking-wider transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
+                            className="w-full py-3 bg-[#120703] border border-orange-500/35 hover:bg-orange-950/10 text-[var(--color-occult-purple-light)] rounded-xl font-medium uppercase tracking-wider transition-all flex items-center justify-center space-x-1.5 cursor-pointer"
                           >
                             <ShoppingCart className="w-4 h-4" />
                             <span>Add to Spiritual Basket</span>
@@ -1073,22 +1089,22 @@ export default function App() {
 
                         <button
                           onClick={() => handleStartFreeTrial(selectedCourseDetail)}
-                          className="w-full py-2.5 bg-gray-950 hover:bg-gray-900 text-gray-300 font-medium rounded-xl uppercase tracking-wider border border-orange-500/10 hover:border-orange-500/25 transition-all text-[11px] cursor-pointer"
+                          className="w-full py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl uppercase tracking-wider border border-gray-200 hover:border-orange-500/25 transition-all text-[11px] cursor-pointer"
                         >
                           Begin 7 Days Free Trial
                         </button>
                       </div>
 
-                      <div className="border-t border-orange-500/10 pt-3 flex items-center justify-between text-[10px] text-gray-500 font-serif">
+                      <div className="border-t border-gray-200 pt-3 flex items-center justify-between text-[10px] text-gray-500 font-serif">
                         <span>🔒 Secured dakshina</span>
                         <span>⭐ Lineage Certified tracks</span>
                       </div>
                     </div>
 
                     {/* Chapters Syllabus Preview */}
-                    <div className="bg-[#0c0604] border border-orange-500/15 rounded-2xl p-5 shadow-xl text-left space-y-4 font-serif">
-                      <div className="border-b border-orange-500/10 pb-3">
-                        <h4 className="text-xs uppercase text-orange-400 font-serif font-bold tracking-widest">Modules Syllabus Curriculum</h4>
+                    <div className="bg-white border border-gray-200 rounded-2xl p-5 shadow-xl text-left space-y-4 font-serif">
+                      <div className="border-b border-gray-200 pb-3">
+                        <h4 className="text-xs uppercase text-[var(--color-occult-purple-light)] font-serif font-bold tracking-widest">Modules Syllabus Curriculum</h4>
                         <span className="text-[10px] text-gray-500 font-sans">{selectedCourseDetail.chapters.length} Chapters • {selectedCourseDetail.chapters.reduce((sum, ch) => sum + ch.modules.length, 0)} Lessons</span>
                       </div>
 
@@ -1096,7 +1112,7 @@ export default function App() {
                         {selectedCourseDetail.chapters.map((ch, idx) => (
                           <div key={ch.id} className="space-y-2 bg-[#120703]/50 border border-orange-500/5 p-3 rounded-xl text-left">
                             <span className="text-[9px] font-mono text-[#f97316]/60 uppercase font-bold tracking-wider">Chapter {idx+1} • MODULE</span>
-                            <h5 className="text-xs font-serif font-bold text-gray-200 mt-0.5 uppercase">{ch.title}</h5>
+                            <h5 className="text-xs font-serif font-bold text-gray-800 mt-0.5 uppercase">{ch.title}</h5>
                             <div className="space-y-1.5 pt-1 border-t border-orange-500/5 mt-1 font-sans">
                               {ch.modules.map((mod) => (
                                 <div key={mod.id} className="flex items-center justify-between gap-2.5 text-[10px] py-1 text-gray-400 font-sans">
@@ -1122,13 +1138,13 @@ export default function App() {
             
             {/* Title Header */}
             <div className="text-center max-w-xl mx-auto">
-              <span className="text-[10px] text-orange-400 font-serif font-bold uppercase tracking-widest block">Sacred Academy Curriculum</span>
+              <span className="text-[10px] text-[var(--color-occult-purple-light)] font-serif font-bold uppercase tracking-widest block">Sacred Academy Curriculum</span>
               <h2 className="text-2xl sm:text-3xl font-bold font-serif text-gray-100 uppercase mt-1">Sacred Courses & Deep Dives</h2>
               <p className="text-xs text-gray-400 mt-2 font-serif">Curated learning paths blending textual accuracy with practical lineage application. Study our rich shastras today.</p>
             </div>
 
             {/* Search Filters Bar */}
-            <div className="bg-[#0c0604] border border-orange-500/15 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+            <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
               
               {/* Search bar input */}
               <div className="relative w-full md:max-w-md">
@@ -1138,7 +1154,7 @@ export default function App() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search Vedas, Upanishads, Jyotish, Sanskrit grammar..."
-                  className="w-full bg-[#0a0502]/80 border border-orange-500/15 focus:border-orange-500/40 pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm text-gray-200 focus:outline-none transition-all placeholder:text-gray-600"
+                  className="w-full bg-gray-50 border border-gray-200 focus:border-[var(--color-occult-purple-light)] focus:bg-white pl-10 pr-4 py-2.5 rounded-xl text-xs sm:text-sm text-gray-800 focus:outline-none transition-all placeholder:text-gray-400"
                   id="course-search-field"
                 />
               </div>
@@ -1147,31 +1163,31 @@ export default function App() {
               <div className="flex flex-wrap items-center gap-3 w-full md:w-auto font-sans text-xs">
                 
                 {/* Category select */}
-                <div className="flex items-center space-x-1.5 bg-[#0a0502]/80 border border-orange-500/15 px-3 py-2 rounded-xl text-orange-400">
+                <div className="flex items-center space-x-1.5 bg-gray-50 border border-gray-200 px-3 py-2 rounded-xl text-[var(--color-occult-purple-light)]">
                   <Filter className="w-3.5 h-3.5" />
                   <select 
                     value={categoryFilter} 
                     onChange={(e) => setCategoryFilter(e.target.value)}
-                    className="bg-transparent focus:outline-none focus:ring-0 text-xs text-gray-300 cursor-pointer"
+                    className="bg-transparent focus:outline-none focus:ring-0 text-xs text-gray-700 cursor-pointer"
                   >
-                    <option value="" className="bg-[#0c0604] text-gray-300">All Categories</option>
-                    <option value="Astrology & Allied Sciences" className="bg-[#0c0604] text-gray-300">Astrology & Jyotish</option>
-                    <option value="Linguistics & Chanting" className="bg-[#0c0604] text-gray-300">Linguistics & Chanting</option>
+                    <option value="" className="bg-white text-gray-800">All Categories</option>
+                    <option value="Astrology & Allied Sciences" className="bg-white text-gray-800">Astrology & Jyotish</option>
+                    <option value="Linguistics & Chanting" className="bg-white text-gray-800">Linguistics & Chanting</option>
                   </select>
                 </div>
 
                 {/* Difficulty select */}
-                <div className="flex items-center space-x-1.5 bg-[#0a0502]/80 border border-orange-500/15 px-3 py-2 rounded-xl text-orange-400">
+                <div className="flex items-center space-x-1.5 bg-gray-50 border border-gray-200 px-3 py-2 rounded-xl text-[var(--color-occult-purple-light)]">
                   <Flame className="w-3.5 h-3.5 text-amber-500" />
                   <select 
                     value={difficultyFilter} 
                     onChange={(e) => setDifficultyFilter(e.target.value)}
-                    className="bg-transparent focus:outline-none focus:ring-0 text-xs text-gray-300 cursor-pointer"
+                    className="bg-transparent focus:outline-none focus:ring-0 text-xs text-gray-700 cursor-pointer"
                   >
-                    <option value="" className="bg-[#0c0604] text-gray-300">Any Difficulty</option>
-                    <option value="Beginner" className="bg-[#0c0604] text-gray-300">Beginner</option>
-                    <option value="Intermediate" className="bg-[#0c0604] text-gray-300">Intermediate</option>
-                    <option value="Advanced" className="bg-[#0c0604] text-gray-300">Advanced</option>
+                    <option value="" className="bg-white text-gray-800">Any Difficulty</option>
+                    <option value="Beginner" className="bg-white text-gray-800">Beginner</option>
+                    <option value="Intermediate" className="bg-white text-gray-800">Intermediate</option>
+                    <option value="Advanced" className="bg-white text-gray-800">Advanced</option>
                   </select>
                 </div>
 
@@ -1181,7 +1197,7 @@ export default function App() {
             {/* Courses grid container */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCoursesList.length === 0 ? (
-                <div className="col-span-full text-center py-20 bg-[#0c0604] rounded-3xl border border-orange-500/15">
+                <div className="col-span-full text-center py-20 bg-white rounded-3xl border border-gray-200">
                   <AlertCircle className="w-12 h-12 text-orange-500/60 mx-auto mb-4" />
                   <p className="text-gray-400 italic font-serif">No courses matched your query. Try clearing filters or revising keywords.</p>
                 </div>
@@ -1191,7 +1207,7 @@ export default function App() {
                   return (
                     <div 
                       key={course.id}
-                      className="bg-[#0c0604] border border-orange-500/10 hover:border-orange-500/30 rounded-2xl overflow-hidden transition-all flex flex-col justify-between group h-full shadow-xl hover:shadow-[0_0_20px_rgba(249,115,22,0.06)]"
+                      className="bg-white border border-gray-200 hover:border-gray-300 rounded-2xl overflow-hidden transition-all flex flex-col justify-between group h-full shadow-xl hover:shadow-lg"
                       id={`course-card-${course.id}`}
                     >
                       {/* Thumbnail frame */}
@@ -1202,10 +1218,10 @@ export default function App() {
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           referrerPolicy="no-referrer"
                         />
-                        <div className="absolute top-3 left-3 bg-[#0c0604]/90 backdrop-blur-md px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold tracking-wider uppercase text-orange-400 border border-orange-500/20">
+                        <div className="absolute top-3 left-3 bg-[var(--color-occult-purple)] text-white backdrop-blur-md px-2.5 py-1 rounded-lg text-[9px] font-mono font-bold tracking-wider uppercase border border-white/20 shadow-sm">
                           {course.category}
                         </div>
-                        <div className="absolute bottom-3 right-3 bg-[#0a0502]/90 backdrop-blur-md px-2 py-0.5 rounded-lg text-[10px] font-mono text-gray-300 border border-orange-500/10">
+                        <div className="absolute bottom-3 right-3 bg-white/95 backdrop-blur-md px-2 py-0.5 rounded-lg text-[10px] font-mono text-gray-800 font-bold border border-gray-200 shadow-sm">
                           {course.difficulty}
                         </div>
                       </div>
@@ -1213,26 +1229,26 @@ export default function App() {
                       {/* Info body */}
                       <div className="p-5 flex-1 flex flex-col justify-between">
                         <div>
-                          <div className="flex items-center space-x-2 text-xs text-orange-400/80 mb-2 font-serif">
+                          <div className="flex items-center space-x-2 text-xs text-[var(--color-occult-purple-light)]/80 mb-2 font-serif">
                             <span className="font-bold">{course.instructorName}</span>
                             <span className="text-orange-500/35">•</span>
                             <span className="font-sans text-[11px] text-gray-500">{course.studentsCount} Initiates Enrolled</span>
                           </div>
 
-                          <h3 className="font-bold font-serif text-gray-100 text-sm sm:text-base leading-snug group-hover:text-orange-400 transition-colors mb-3 uppercase tracking-wide">
+                          <h3 className="font-bold font-serif text-[var(--color-occult-purple)] text-sm sm:text-base leading-snug group-hover:text-[var(--color-occult-purple-light)] transition-colors mb-3 uppercase tracking-wide">
                             {course.title}
                           </h3>
 
-                          <p className="text-xs text-gray-400 leading-relaxed font-serif line-clamp-3 mb-4">
+                          <p className="text-xs text-gray-600 leading-relaxed font-serif line-clamp-3 mb-4">
                             {course.description}
                           </p>
                         </div>
 
                         {/* Interactive highlights & trigger action */}
                         <div>
-                          <div className="space-y-1.5 mb-5 border-t border-orange-500/10 pt-4">
+                          <div className="space-y-1.5 mb-5 border-t border-gray-200 pt-4">
                             {course.highlights.slice(0, 2).map((hl, kIdx) => (
-                              <div key={kIdx} className="flex items-start space-x-2 text-[11px] text-gray-400 font-serif">
+                              <div key={kIdx} className="flex items-start space-x-2 text-[11px] text-gray-600 font-serif">
                                 <span className="text-orange-500 shrink-0 mt-0.5 text-xs">🍃</span>
                                 <span className="truncate">{hl}</span>
                               </div>
@@ -1241,7 +1257,7 @@ export default function App() {
 
                           <div className="flex items-center justify-between mt-auto pt-2">
                             <div>
-                              <span className="text-[9px] text-[#f97316]/50 uppercase font-mono font-bold tracking-widest block">Tuition Dakshina</span>
+                              <span className="text-[9px] text-[#f97316]/80 uppercase font-mono font-bold tracking-widest block">Tuition Dakshina</span>
                               <div className="flex items-baseline space-x-1.5 mt-0.5">
                                 <span className="text-base font-bold text-[#f97316]">₹{course.price}</span>
                                 <span className="text-xs text-gray-500 line-through">₹{course.originalPrice}</span>
@@ -1251,7 +1267,7 @@ export default function App() {
                             {isEnrolled ? (
                               <button
                                 onClick={() => { setSelectedCourse(course); setActiveTab('active-learning'); }}
-                                className="px-4 py-2 border border-orange-500/35 bg-[#120703] hover:bg-orange-950/10 rounded-xl text-xs font-serif font-bold text-orange-400 tracking-wider transition-all cursor-pointer flex items-center space-x-1 uppercase"
+                                className="px-4 py-2 border border-[var(--color-occult-purple-light)] bg-white hover:bg-[var(--color-occult-purple-very-light)] rounded-xl text-xs font-serif font-bold text-[var(--color-occult-purple)] tracking-wider transition-all cursor-pointer flex items-center space-x-1 uppercase"
                               >
                                 <span>Open Portal</span>
                                 <ChevronRight className="w-3.5 h-3.5" />
@@ -1260,7 +1276,7 @@ export default function App() {
                               <div className="flex items-center space-x-1.5 shrink-0">
                                 <button
                                   onClick={() => setSelectedCourseDetail(course)}
-                                  className="px-3 py-2 border border-orange-500/30 bg-[#120703] hover:bg-orange-905 text-orange-400 hover:text-orange-300 rounded-xl text-[10px] font-serif font-bold uppercase tracking-wider transition-all cursor-pointer"
+                                  className="px-3 py-2 border border-[var(--color-occult-purple-light)] bg-white hover:bg-[var(--color-occult-purple-very-light)] text-[var(--color-occult-purple)] rounded-xl text-[10px] font-serif font-bold uppercase tracking-wider transition-all cursor-pointer"
                                 >
                                   Syllabus
                                 </button>
@@ -1290,7 +1306,7 @@ export default function App() {
         {/* VIEW 2: STUDY JOURNEY / ENROLLED COURSES */}
         {activeTab === 'my-courses' && (
           <div className="space-y-8 select-none animate-in fade-in duration-300" id="learning-journey-view">
-            <div className="border-b border-orange-500/10 pb-5">
+            <div className="border-b border-gray-200 pb-5">
               <h3 className="text-xl sm:text-2xl font-bold font-serif text-gray-100 uppercase">Your Sacred Learning Journey</h3>
               <p className="text-xs text-gray-500 font-mono tracking-widest mt-1 uppercase">Track Vedic chanting & computations milestones</p>
             </div>
@@ -1298,7 +1314,7 @@ export default function App() {
             {/* List block */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {enrollments.length === 0 ? (
-                <div className="col-span-full text-center py-20 bg-[#0c0604] rounded-3xl border border-orange-500/15">
+                <div className="col-span-full text-center py-20 bg-white rounded-3xl border border-gray-200">
                   <Award className="w-12 h-12 text-orange-500/60 mx-auto mb-4" />
                   <p className="text-gray-400 mb-6 font-serif">You are not enrolled in any sacred lineage courses yet.</p>
                   <button 
@@ -1316,18 +1332,18 @@ export default function App() {
                   return (
                     <div 
                       key={en.id}
-                      className="bg-[#0c0604] border border-orange-500/15 rounded-2xl overflow-hidden p-5 flex flex-col sm:flex-row gap-5 items-stretch shadow-md hover:border-orange-500/30 transition-all font-serif"
+                      className="bg-white border border-gray-200 rounded-2xl overflow-hidden p-5 flex flex-col sm:flex-row gap-5 items-stretch shadow-md hover:border-gray-300 transition-all font-serif"
                     >
                       <img 
                         src={course.thumbnail} 
                         alt={course.title} 
-                        className="w-full sm:w-32 h-24 object-cover rounded-xl border border-orange-500/10"
+                        className="w-full sm:w-32 h-24 object-cover rounded-xl border border-gray-200"
                         referrerPolicy="no-referrer"
                       />
                       
                       <div className="flex-1 flex flex-col justify-between">
                         <div>
-                          <span className="text-[9px] font-mono tracking-wider uppercase text-orange-400 font-bold bg-orange-950/40 px-2 py-0.5 rounded-md border border-orange-500/25">{course.category}</span>
+                          <span className="text-[9px] font-mono tracking-wider uppercase text-[var(--color-occult-purple-light)] font-bold bg-orange-950/40 px-2 py-0.5 rounded-md border border-orange-500/25">{course.category}</span>
                           <h4 className="font-bold text-gray-100 text-sm sm:text-base mt-2 line-clamp-1 uppercase tracking-warn">{course.title}</h4>
                           <p className="text-[11px] text-gray-400 mt-1">Instructor: {course.instructorName}</p>
                         </div>
@@ -1336,7 +1352,7 @@ export default function App() {
                         <div className="mt-4">
                           <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1">
                             <span>Vedic Memorization Standards</span>
-                            <span className="font-bold text-orange-400">{en.progressPercentage}%</span>
+                            <span className="font-bold text-[var(--color-occult-purple-light)]">{en.progressPercentage}%</span>
                           </div>
                           
                           <div className="w-full h-1.5 bg-[#0a0502] rounded-full overflow-hidden">
@@ -1454,10 +1470,10 @@ export default function App() {
             <div className="space-y-8" id="lms-active-desk">
               
               {/* Breadcrumb row */}
-              <div className="flex items-center space-x-2 text-xs text-gray-400 border-b border-gray-800/60 pb-4">
+              <div className="flex items-center space-x-2 text-xs text-gray-400 border-b border-gray-200/60 pb-4">
                 <span className="cursor-pointer hover:text-white" onClick={() => setActiveTab('explore')}>My Gurukul</span>
                 <span>/</span>
-                <span className="text-gray-200">{selectedCourse.title}</span>
+                <span className="text-gray-800">{selectedCourse.title}</span>
                 {isTrialActive && (
                   <>
                     <span>/</span>
@@ -1467,11 +1483,11 @@ export default function App() {
               </div>
 
               {/* Title & Trial Status header */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-[#0c0e17] p-6 rounded-2xl border border-gray-805">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-2xl border border-gray-200">
                 <div>
                   <span className="text-[10px] text-amber-500 font-mono font-bold uppercase tracking-widest">{selectedCourse.category} SACRED PATH</span>
                   <h2 className="text-2xl sm:text-3xl font-black text-white mt-1 font-serif">{selectedCourse.title}</h2>
-                  <p className="text-xs text-gray-400 mt-1">Sadhana guided by lineage expert <span className="text-orange-400 font-semibold">{selectedCourse.instructorName}</span></p>
+                  <p className="text-xs text-gray-400 mt-1">Sadhana guided by lineage expert <span className="text-[var(--color-occult-purple-light)] font-semibold">{selectedCourse.instructorName}</span></p>
                 </div>
 
                 {isTrialActive ? (
@@ -1479,7 +1495,7 @@ export default function App() {
                     <span className="text-3xl">🔓</span>
                     <div>
                       <p className="text-xs font-bold text-amber-400 font-serif">Simulated 7-Day Demo Trial</p>
-                      <p className="text-[10px] text-gray-300 mt-1">Recorded lectures are 100% active. Buy tuition to unlock community postings, guru live doubt tickets, and verified certificates.</p>
+                      <p className="text-[10px] text-gray-700 mt-1">Recorded lectures are 100% active. Buy tuition to unlock community postings, guru live doubt tickets, and verified certificates.</p>
                       <button 
                         onClick={() => handleTriggerCheckout(selectedCourse)} 
                         className="mt-2.5 px-3 py-1 bg-amber-500 hover:bg-amber-400 text-black text-[10px] font-bold uppercase rounded-lg transition"
@@ -1500,13 +1516,13 @@ export default function App() {
               </div>
 
               {/* STUDENT SECTION TAB BAR NAVIGATION */}
-              <div className="flex flex-wrap items-center gap-1.5 border-b border-gray-800 pb-2">
+              <div className="flex flex-wrap items-center gap-1.5 border-b border-gray-200 pb-2">
                 <button
                   onClick={() => setActiveLmsTab('lectures')}
                   className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase sm:tracking-wider transition flex items-center space-x-2 ${
                     activeLmsTab === 'lectures'
                       ? 'bg-orange-600 text-white shadow-xl shadow-orange-950/50'
-                      : 'bg-gray-900/40 text-gray-400 hover:text-white border border-transparent hover:bg-gray-900/80'
+                      : 'bg-gray-100 text-gray-600 hover:text-gray-900 border border-transparent hover:bg-gray-200'
                   }`}
                 >
                   <Video className="w-3.5 h-3.5" />
@@ -1521,7 +1537,7 @@ export default function App() {
                   className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase sm:tracking-wider transition flex items-center space-x-2 ${
                     activeLmsTab === 'community'
                       ? 'bg-orange-600 text-white shadow-xl shadow-orange-950/50'
-                      : 'bg-gray-900/40 text-gray-400 hover:text-white border border-transparent hover:bg-gray-900/80'
+                      : 'bg-gray-100 text-gray-600 hover:text-gray-900 border border-transparent hover:bg-gray-200'
                   }`}
                 >
                   <Users className="w-3.5 h-3.5" />
@@ -1536,7 +1552,7 @@ export default function App() {
                   className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase sm:tracking-wider transition flex items-center space-x-2 ${
                     activeLmsTab === 'doubt'
                       ? 'bg-orange-600 text-white shadow-xl shadow-orange-950/50'
-                      : 'bg-gray-900/40 text-gray-400 hover:text-white border border-transparent hover:bg-gray-900/80'
+                      : 'bg-gray-100 text-gray-600 hover:text-gray-900 border border-transparent hover:bg-gray-200'
                   }`}
                 >
                   <Brain className="w-3.5 h-3.5" />
@@ -1551,7 +1567,7 @@ export default function App() {
                   className={`px-4 py-2.5 rounded-xl text-xs font-bold uppercase sm:tracking-wider transition flex items-center space-x-2 ${
                     activeLmsTab === 'schedule'
                       ? 'bg-orange-600 text-white shadow-xl shadow-orange-950/50'
-                      : 'bg-gray-900/40 text-gray-400 hover:text-white border border-transparent hover:bg-gray-900/80'
+                      : 'bg-gray-100 text-gray-600 hover:text-gray-900 border border-transparent hover:bg-gray-200'
                   }`}
                 >
                   <Calendar className="w-3.5 h-3.5" />
@@ -1602,7 +1618,7 @@ export default function App() {
                             </div>
 
                             {/* Velocity control toolbar */}
-                            <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-950/90 p-3 rounded-xl border border-gray-900 z-10 text-xs text-gray-300">
+                            <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-950/90 p-3 rounded-xl border border-gray-900 z-10 text-xs text-gray-700">
                               <div className="flex items-center space-x-4">
                                 <button
                                   onClick={() => {
@@ -1624,7 +1640,7 @@ export default function App() {
                                     <button
                                       key={spd}
                                       onClick={() => setPlaybackSpeed(spd)}
-                                      className={`px-2.5 py-1 rounded-md font-mono text-[10px] font-bold ${playbackSpeed === spd ? 'bg-orange-600 text-white' : 'bg-gray-900 text-gray-400 hover:text-white'}`}
+                                      className={`px-2.5 py-1 rounded-md font-mono text-[10px] font-bold ${playbackSpeed === spd ? 'bg-orange-600 text-white' : 'bg-gray-100 text-gray-600 hover:text-gray-900'}`}
                                     >
                                       {spd}x
                                     </button>
@@ -1653,10 +1669,10 @@ export default function App() {
                       </div>
 
                       {/* Study Notes & Annotation workspace */}
-                      <div className="bg-[#111625] border border-gray-800 rounded-2xl p-5 sm:p-6" id="notes-annotations-section">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-800 pb-4 mb-4">
+                      <div className="bg-[#111625] border border-gray-200 rounded-2xl p-5 sm:p-6" id="notes-annotations-section">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-4 mb-4">
                           <div>
-                            <h3 className="font-bold text-gray-200 font-serif">Sutra & Lecture Annotations</h3>
+                            <h3 className="font-bold text-gray-800 font-serif">Sutra & Lecture Annotations</h3>
                             <p className="text-xs text-gray-400 mt-0.5">Maintain personalized study notes linked to timestamps.</p>
                           </div>
                           
@@ -1672,7 +1688,7 @@ export default function App() {
 
                         {/* Input comment field */}
                         <div className="flex gap-3 mb-6">
-                          <div className="bg-gray-900 border border-gray-800 rounded-xl px-3 py-1.5 flex items-center justify-center text-xs text-amber-500 font-mono h-11">
+                          <div className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 flex items-center justify-center text-xs text-amber-500 font-mono h-11">
                             <Clock className="w-3.5 h-3.5 text-amber-500 mr-1.5 shrink-0" />
                             <span>{Math.floor(videoTime / 60)}:{(videoTime % 60).toString().padStart(2, '0')}</span>
                           </div>
@@ -1681,7 +1697,7 @@ export default function App() {
                             value={studyNoteText}
                             onChange={(e) => setStudyNoteText(e.target.value)}
                             placeholder="Type translation, chants meanings, or guru insights here..."
-                            className="flex-1 bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs text-gray-250 focus:outline-none focus:ring-1 focus:ring-orange-500 h-11"
+                            className="flex-1 bg-white border border-gray-200 p-3 rounded-xl text-xs text-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 h-11"
                           />
                           <button 
                             onClick={handleSaveStudyNote}
@@ -1697,7 +1713,7 @@ export default function App() {
                             <p className="text-xs text-gray-500 italic py-2">No custom annotation markers saved for this lecture yet. Annotate lines during key segment transfers to speed up your learning loop.</p>
                           ) : (
                             notes.filter(n => n.courseId === selectedCourse.id).map(n => (
-                              <div key={n.id} className="bg-gray-900/60 p-3.5 border border-gray-800 rounded-xl flex items-start justify-between text-xs transition hover:border-gray-700">
+                              <div key={n.id} className="bg-gray-50 p-3.5 border border-gray-200 rounded-xl flex items-start justify-between text-xs transition hover:border-gray-200">
                                 <div className="flex items-start space-x-3">
                                   <button 
                                     onClick={() => setVideoTime(n.videoTimeSeconds)}
@@ -1706,7 +1722,7 @@ export default function App() {
                                     <Play className="w-2.5 h-2.5 text-amber-500 mr-1 fill-amber-500" />
                                     <span>{Math.floor(n.videoTimeSeconds / 60)}:{(n.videoTimeSeconds % 60).toString().padStart(2, '0')}</span>
                                   </button>
-                                  <p className="text-gray-300 leading-relaxed font-sans mt-0.5">{n.text}</p>
+                                  <p className="text-gray-700 leading-relaxed font-sans mt-0.5">{n.text}</p>
                                 </div>
                                 <button 
                                   onClick={() => handleDeleteStudyNote(n.id)}
@@ -1722,10 +1738,10 @@ export default function App() {
 
                       {/* Dynamic Assessment Quiz with Socratic Auto-Solver Helper */}
                       {localAIQuiz ? (
-                        <div className="bg-[#121826]/95 border border-gray-800 rounded-2xl p-6 shadow-2xl" id="local-ai-quiz-solver">
-                          <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-6">
+                        <div className="bg-[#121826]/95 border border-gray-200 rounded-2xl p-6 shadow-2xl" id="local-ai-quiz-solver">
+                          <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
                             <div>
-                              <h3 className="font-bold text-gray-200 flex items-center space-x-2 font-serif text-sm sm:text-base">
+                              <h3 className="font-bold text-gray-800 flex items-center space-x-2 font-serif text-sm sm:text-base">
                                 <Brain className="w-5 h-5 text-orange-500" />
                                 <span>Authentic Lineage Quiz Assessment</span>
                               </h3>
@@ -1733,7 +1749,7 @@ export default function App() {
                             </div>
                             <button 
                               onClick={() => setLocalAIQuiz(null)}
-                              className="text-xs text-gray-500 hover:text-gray-300 font-mono"
+                              className="text-xs text-gray-500 hover:text-gray-700 font-mono"
                             >
                               Exit Test
                             </button>
@@ -1761,8 +1777,8 @@ export default function App() {
                             />
 
                             {/* Inline Socratic Auto-Solver helper box */}
-                            <div className="mt-8 pt-6 border-t border-gray-805 bg-gray-950/40 p-5 rounded-2xl border border-orange-500/10">
-                              <h4 className="text-xs font-serif text-orange-400 font-bold uppercase tracking-wider flex items-center space-x-1.5 mb-2">
+                            <div className="mt-8 pt-6 border-t border-gray-200 bg-gray-950/40 p-5 rounded-2xl border border-gray-200">
+                              <h4 className="text-xs font-serif text-[var(--color-occult-purple-light)] font-bold uppercase tracking-wider flex items-center space-x-1.5 mb-2">
                                 <Sparkles className="w-3.5 h-3.5" />
                                 <span>Hermitage Socratic Auto-Solver AI Helper</span>
                               </h4>
@@ -1774,7 +1790,7 @@ export default function App() {
                                 {localAIQuiz.questions.map((q, idx) => (
                                   <div key={q.id} className="border-b border-gray-900 pb-3 last:border-0 last:pb-0">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                      <p className="text-xs font-medium text-gray-300">Q{idx+1}: {q.question}</p>
+                                      <p className="text-xs font-medium text-gray-700">Q{idx+1}: {q.question}</p>
                                       
                                       <button
                                         onClick={() => handleSolveQuizOption(q.id, q.question, q.options[q.correctAnswerIndex])}
@@ -1785,7 +1801,7 @@ export default function App() {
                                     </div>
 
                                     {aiAutoResolverOutput[q.id] && (
-                                      <div className="mt-2.5 bg-gray-950/90 text-gray-300 p-4 rounded-xl text-xs leading-relaxed border border-gray-850/80 whitespace-pre-line font-sans animate-in fade-in">
+                                      <div className="mt-2.5 bg-gray-950/90 text-gray-700 p-4 rounded-xl text-xs leading-relaxed border border-gray-850/80 whitespace-pre-line font-sans animate-in fade-in">
                                         <div className="text-[9px] text-amber-500 uppercase tracking-widest font-mono font-bold mb-1">Gurukul Commentary Exegesis:</div>
                                         {aiAutoResolverOutput[q.id]}
                                       </div>
@@ -1797,9 +1813,9 @@ export default function App() {
                           </div>
                         </div>
                       ) : (
-                        <div className="bg-[#111625] border border-gray-800 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="bg-[#111625] border border-gray-200 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
                           <div>
-                            <h4 className="text-sm font-serif font-bold text-gray-200">Active Module Self-Assessment</h4>
+                            <h4 className="text-sm font-serif font-bold text-gray-800">Active Module Self-Assessment</h4>
                             <p className="text-xs text-gray-400 mt-1 max-w-md">Verify your comprehension of the current syllabus lessons with official multiple-choice evaluations.</p>
                           </div>
                           <button
@@ -1839,7 +1855,7 @@ export default function App() {
                                 console.error(err);
                               }
                             }}
-                            className="px-5 py-2.5 bg-gray-900 border border-gray-700 hover:bg-gray-800 text-gray-200 hover:text-white rounded-xl text-xs font-semibold shrink-0 cursor-pointer transition text-center"
+                            className="px-5 py-2.5 bg-white border border-gray-200 hover:bg-gray-100 text-gray-700 hover:text-white rounded-xl text-xs font-semibold shrink-0 cursor-pointer transition text-center"
                           >
                             Launch Verse Quiz Checkpoint
                           </button>
@@ -1847,8 +1863,8 @@ export default function App() {
                       )}
 
                       {/* Wisdom Metrics tracking widgets */}
-                      <div className="bg-[#111625] border border-gray-800 rounded-2xl p-6 space-y-4" id="wisdom-learning-metrics">
-                        <div className="border-b border-gray-805 pb-3">
+                      <div className="bg-[#111625] border border-gray-200 rounded-2xl p-6 space-y-4" id="wisdom-learning-metrics">
+                        <div className="border-b border-gray-200 pb-3">
                           <h4 className="text-xs font-mono font-bold uppercase text-amber-500 tracking-wider">Swadhyaya (Learning Metrics) Dashboard</h4>
                           <p className="text-[10px] text-gray-500 mt-0.5">Real-time indicators tracking your wisdom retention indices.</p>
                         </div>
@@ -1891,7 +1907,7 @@ export default function App() {
                               </svg>
                             </div>
                             <div>
-                              <span className="text-xs font-serif text-gray-200 font-bold block">Sadhaka Mindful Path Mastery</span>
+                              <span className="text-xs font-serif text-gray-800 font-bold block">Sadhaka Mindful Path Mastery</span>
                               <p className="text-[10px] text-gray-400 leading-relaxed mt-0.5">Your study metrics show deep alignment with the oral rhythm. You are currently outpacing 85% of cohort scholars.</p>
                             </div>
                           </div>
@@ -1916,16 +1932,16 @@ export default function App() {
                                   <div className={`p-2 rounded-lg border ${
                                     isCompleted 
                                       ? 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500' 
-                                      : 'bg-gray-900 border-gray-800 text-gray-500'
+                                      : 'bg-gray-50 border-gray-200 text-gray-500'
                                   }`}>
                                     <Award className="w-5 h-5" />
                                   </div>
                                   <div>
                                     <span className="text-[9px] uppercase tracking-wider font-mono text-gray-400 font-bold block">Lineage Completion Certificate</span>
-                                    <h5 className="font-serif font-bold text-xs text-gray-200 mt-0.5">
+                                    <h5 className="font-serif font-bold text-xs text-gray-800 mt-0.5">
                                       {isCompleted ? '🏆 Lineage Certificate Unlocked!' : '🔒 Certificate Locked'}
                                     </h5>
-                                    <p className="text-[10px] text-gray-450 mt-1 leading-relaxed font-serif">
+                                    <p className="text-[10px] text-gray-600 mt-1 leading-relaxed font-serif">
                                       {isCompleted 
                                         ? 'Siddha congratulations! Your mastery has been verified by the lineage. Claim your credentials below.'
                                         : `Achieve 100% video progress to unlock this certificate. Complete ${totalCount - completedCount} more lessons.`}
@@ -1943,7 +1959,7 @@ export default function App() {
                                 ) : (
                                   <button
                                     disabled
-                                    className="px-4 py-2 bg-gray-900 border border-gray-800 text-gray-550 text-xs font-serif uppercase tracking-wider font-bold rounded-xl cursor-not-allowed shrink-0"
+                                    className="px-4 py-2 bg-white border border-gray-200 text-gray-500 text-xs font-serif uppercase tracking-wider font-bold rounded-xl cursor-not-allowed shrink-0"
                                   >
                                     Locked ({percent}%)
                                   </button>
@@ -1963,8 +1979,8 @@ export default function App() {
                     <div className="space-y-6">
                       
                       {/* Course specific community header */}
-                      <div className="bg-gradient-to-br from-[#120703] to-[#0b0c13] border border-gray-800 p-6 rounded-2xl">
-                        <h4 className="text-base font-serif font-bold text-orange-400 flex items-center space-x-1.5">
+                      <div className="bg-gradient-to-br from-[#120703] to-[#0b0c13] border border-gray-200 p-6 rounded-2xl">
+                        <h4 className="text-base font-serif font-bold text-[var(--color-occult-purple-light)] flex items-center space-x-1.5">
                           <span>👥</span>
                           <span>{selectedCourse.title} - Dedicated Classroom Forum</span>
                         </h4>
@@ -1979,7 +1995,7 @@ export default function App() {
                           <span className="text-2xl mt-0.5 shrink-0">🔒</span>
                           <div>
                             <h5 className="text-xs font-bold font-serif text-amber-500 uppercase tracking-widest">Secured Trial Access: View-Only Mode</h5>
-                            <p className="text-[11px] text-gray-300 leading-relaxed mt-1">
+                            <p className="text-[11px] text-gray-700 leading-relaxed mt-1">
                               You are currently sampling this curriculum via the 7-Day Spiritual Access Trial. Live lecture viewing is fully unlocked, but broadcasting queries, writing posts, and responding inside the peer Sangha forum requires an active tuition dakshina.
                             </p>
                             <button
@@ -1992,8 +2008,8 @@ export default function App() {
                         </div>
                       ) : (
                         /* Open Thread builder for full paid accounts */
-                        <div className="bg-[#111625] border border-gray-800 rounded-2xl p-5 sm:p-6" id="course-thread-builder">
-                          <h4 className="text-xs uppercase text-orange-400 font-mono tracking-wider font-bold mb-3.5">Engage in traditional Sangha (Add post)</h4>
+                        <div className="bg-[#111625] border border-gray-200 rounded-2xl p-5 sm:p-6" id="course-thread-builder">
+                          <h4 className="text-xs uppercase text-[var(--color-occult-purple-light)] font-mono tracking-wider font-bold mb-3.5">Engage in traditional Sangha (Add post)</h4>
                           <form 
                             onSubmit={async (e) => {
                               e.preventDefault();
@@ -2009,7 +2025,7 @@ export default function App() {
                                 value={newDiscussionTitle}
                                 onChange={(e) => setNewDiscussionTitle(e.target.value)}
                                 placeholder="e.g. Seeking translation help on chapter 2, sutra 14..."
-                                className="w-full bg-gray-900 border border-gray-800 p-2.5 rounded-xl text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                                className="w-full bg-white border border-gray-200 p-2.5 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-orange-500"
                               />
                             </div>
 
@@ -2020,7 +2036,7 @@ export default function App() {
                                 onChange={(e) => setNewDiscussionBody(e.target.value)}
                                 placeholder="Write clear parameters, list pronunciation struggles, or share comparative philosophies."
                                 rows={4}
-                                className="w-full bg-gray-900 border border-gray-800 p-2.5 rounded-xl text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-orange-500 font-sans"
+                                className="w-full bg-white border border-gray-200 p-2.5 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-orange-500 font-sans"
                               ></textarea>
                             </div>
 
@@ -2037,14 +2053,14 @@ export default function App() {
                       {/* Course forum feed */}
                       <div className="space-y-4">
                         {activeCourseThreads.map((th) => (
-                          <div key={th.id} className="bg-[#111625] border border-gray-800 p-5 rounded-2xl space-y-4 hover:border-gray-700 transition">
+                          <div key={th.id} className="bg-[#111625] border border-gray-200 p-5 rounded-2xl space-y-4 hover:border-gray-200 transition">
                             {/* Author row */}
-                            <div className="flex items-center justify-between text-xs text-gray-400 border-b border-gray-800/50 pb-3">
+                            <div className="flex items-center justify-between text-xs text-gray-400 border-b border-gray-200/50 pb-3">
                               <div className="flex items-center space-x-2.5">
                                 <img src={th.authorAvatar} alt={th.authorName} className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
                                 <div>
-                                  <span className="font-bold text-gray-200">{th.authorName}</span>
-                                  <span className="text-[9px] uppercase tracking-wider font-semibold font-mono text-orange-400 ml-2 bg-[#211612] border border-orange-500/10 px-1.5 py-0.5 rounded">{th.authorRole}</span>
+                                  <span className="font-bold text-gray-800">{th.authorName}</span>
+                                  <span className="text-[9px] uppercase tracking-wider font-semibold font-mono text-[var(--color-occult-purple-light)] ml-2 bg-[#211612] border border-gray-200 px-1.5 py-0.5 rounded">{th.authorRole}</span>
                                 </div>
                               </div>
                               <span className="font-mono text-[9px] text-gray-500">{new Date(th.createdAt).toLocaleDateString()}</span>
@@ -2053,24 +2069,24 @@ export default function App() {
                             {/* Title & Body */}
                             <div>
                               <h5 className="text-sm font-serif font-black text-white">{th.title}</h5>
-                              <p className="text-xs text-gray-300 mt-2 leading-relaxed bg-gray-950/40 p-3.5 rounded-xl border border-gray-900 whitespace-pre-wrap font-sans">{th.body}</p>
+                              <p className="text-xs text-gray-700 mt-2 leading-relaxed bg-gray-950/40 p-3.5 rounded-xl border border-gray-900 whitespace-pre-wrap font-sans">{th.body}</p>
                             </div>
 
                             {/* Replies chain */}
                             <div className="space-y-3 pt-2">
                               {th.replies && th.replies.length > 0 && (
-                                <div className="space-y-3 pl-4 border-l border-orange-500/10">
+                                <div className="space-y-3 pl-4 border-l border-gray-200">
                                   {th.replies.map((rep) => (
                                     <div key={rep.id} className="bg-[#0b0e17] p-3 rounded-xl border border-gray-900 text-xs">
                                       <div className="flex items-center justify-between mb-1.5">
                                         <div className="flex items-center space-x-1.5">
                                           <img src={rep.authorAvatar} className="w-4 h-4 rounded-full" referrerPolicy="no-referrer" />
-                                          <span className="font-bold text-gray-300">{rep.authorName}</span>
-                                          <span className="text-[8px] bg-gray-905 border border-gray-800 font-mono px-1 rounded-md text-gray-450">{rep.authorRole}</span>
+                                          <span className="font-bold text-gray-700">{rep.authorName}</span>
+                                          <span className="text-[8px] bg-gray-905 border border-gray-200 font-mono px-1 rounded-md text-gray-600">{rep.authorRole}</span>
                                         </div>
                                         <span className="text-[8px] font-mono text-gray-600">{new Date(rep.createdAt).toLocaleDateString()}</span>
                                       </div>
-                                      <p className="text-gray-300 leading-relaxed font-sans">{rep.body}</p>
+                                      <p className="text-gray-700 leading-relaxed font-sans">{rep.body}</p>
                                     </div>
                                   ))}
                                 </div>
@@ -2084,7 +2100,7 @@ export default function App() {
                                   value={newReplyText[th.id] || ''}
                                   onChange={(e) => setNewReplyText(prev => ({ ...prev, [th.id]: e.target.value }))}
                                   placeholder={isTrialActive ? "🔒 Replies are locked during demo trials..." : "Type clear response or advice..."}
-                                  className="flex-1 bg-gray-900 border border-gray-800 p-2.5 rounded-xl text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-orange-500 disabled:opacity-40"
+                                  className="flex-1 bg-white border border-gray-200 p-2.5 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-orange-500 disabled:opacity-40"
                                 />
                                 <button 
                                   disabled={isTrialActive}
@@ -2112,8 +2128,8 @@ export default function App() {
                     <div className="space-y-6">
                       
                       {/* Teacher pool segment header */}
-                      <div className="bg-gradient-to-br from-[#120703] to-[#0c0d16] border border-gray-800 p-6 rounded-2xl">
-                        <h4 className="text-base font-serif font-bold text-orange-400">🕉️ Direct Lineage Live Guru Doubt Resolution</h4>
+                      <div className="bg-gradient-to-br from-[#120703] to-[#0c0d16] border border-gray-200 p-6 rounded-2xl">
+                        <h4 className="text-base font-serif font-bold text-[var(--color-occult-purple-light)]">🕉️ Direct Lineage Live Guru Doubt Resolution</h4>
                         <p className="text-xs text-gray-400 mt-1 leading-relaxed">
                           Submit your specific exegesis queries directly to the Guru overseeing that course segment. Our models retrieve historical lineage context and generate comprehensive scriptural answers.
                         </p>
@@ -2132,10 +2148,10 @@ export default function App() {
                             className={`p-4 rounded-xl border cursor-pointer transition text-center flex flex-col items-center ${
                               selectedTeacher === t.name
                                 ? 'bg-orange-600/15 border-orange-500/70 text-orange-300 ring-1 ring-orange-500/20'
-                                : 'bg-gray-900/60 border-gray-850 hover:border-gray-700 text-gray-400 hover:text-white'
+                                : 'bg-gray-50 border-gray-200 hover:border-gray-300 text-gray-500 hover:text-gray-900'
                             }`}
                           >
-                            <img src={t.avatar} className="w-12 h-12 rounded-full mb-2 object-cover border border-gray-800" referrerPolicy="no-referrer" />
+                            <img src={t.avatar} className="w-12 h-12 rounded-full mb-2 object-cover border border-gray-200" referrerPolicy="no-referrer" />
                             <span className="text-xs font-serif font-black block leading-tight">{t.name}</span>
                             <span className="text-[9px] mt-1 font-mono text-gray-500 block leading-normal">{t.specialty}</span>
                           </div>
@@ -2148,7 +2164,7 @@ export default function App() {
                           <span className="text-2xl mt-0.5 shrink-0">🔒</span>
                           <div>
                             <h5 className="text-xs font-bold font-serif text-amber-500 uppercase tracking-widest">Guru Direct Dialogue Locked</h5>
-                            <p className="text-[11px] text-gray-300 leading-relaxed mt-1">
+                            <p className="text-[11px] text-gray-700 leading-relaxed mt-1">
                               One-on-one direct doubt resolution tickets with lineage Acharyas are certified services reserved strictly for fully tuition-secured scholars. Sample our dynamic syllabus lectures immediately, or secure full dakshina to submit personal questions!
                             </p>
                             <button
@@ -2161,15 +2177,15 @@ export default function App() {
                         </div>
                       ) : (
                         /* Inquiry submit box for paid users */
-                        <div className="bg-[#111625] border border-gray-800 p-5 sm:p-6 rounded-2xl space-y-4 font-sans">
-                          <h4 className="text-xs uppercase text-orange-400 font-mono tracking-wider font-bold">Offer Direct Inquiry to {selectedTeacher}</h4>
+                        <div className="bg-[#111625] border border-gray-200 p-5 sm:p-6 rounded-2xl space-y-4 font-sans">
+                          <h4 className="text-xs uppercase text-[var(--color-occult-purple-light)] font-mono tracking-wider font-bold">Offer Direct Inquiry to {selectedTeacher}</h4>
                           <div className="flex gap-2">
                             <input
                               type="text"
                               value={currentDoubtText}
                               onChange={(e) => setCurrentDoubtText(e.target.value)}
                               placeholder={`Submit query to ${selectedTeacher}... (e.g. Please clarify verse 1.4 pronunciation...)`}
-                              className="flex-1 bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                              className="flex-1 bg-white border border-gray-200 p-3 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-orange-500"
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') handleSendGuruLiveDoubt();
                               }}
@@ -2191,15 +2207,15 @@ export default function App() {
                                 <div key={db.id} className="bg-gray-950/40 border border-gray-900 p-5 rounded-2xl space-y-3">
                                   {/* Student question */}
                                   <div className="flex items-start space-x-2.5">
-                                    <span className="text-xs shrink-0 mt-0.5 bg-gray-900 border border-gray-800 px-2.5 py-0.5 rounded text-amber-500 font-mono">My Query</span>
-                                    <p className="text-xs text-gray-200 font-sans">{db.question}</p>
+                                    <span className="text-xs shrink-0 mt-0.5 bg-white border border-gray-200 px-2.5 py-0.5 rounded text-amber-500 font-mono">My Query</span>
+                                    <p className="text-xs text-gray-800 font-sans">{db.question}</p>
                                   </div>
                                   
                                   {/* Guru respond */}
                                   <div className="bg-[#131724]/70 p-4 rounded-xl border border-indigo-950/50 space-y-2 animate-in fade-in">
                                     <div className="flex items-center space-x-2 border-b border-gray-900/50 pb-2 mb-2">
                                       <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                                      <span className="text-xs font-serif font-black text-orange-400">{db.teacher} responding:</span>
+                                      <span className="text-xs font-serif font-black text-[var(--color-occult-purple-light)]">{db.teacher} responding:</span>
                                       <span className="text-[8px] font-mono text-gray-500 ml-auto">{db.timestamp}</span>
                                     </div>
                                     
@@ -2209,7 +2225,7 @@ export default function App() {
                                         <span className="animate-pulse">Guru is analyzing lineage repositories for scriptural resolution...</span>
                                       </div>
                                     ) : (
-                                      <div className="text-xs text-gray-300 leading-relaxed font-sans whitespace-pre-wrap">
+                                      <div className="text-xs text-gray-700 leading-relaxed font-sans whitespace-pre-wrap">
                                         {db.answer}
                                       </div>
                                     )}
@@ -2229,8 +2245,8 @@ export default function App() {
                     <div className="space-y-6">
                       
                       {/* Schedule header card */}
-                      <div className="bg-gradient-to-br from-[#120703] to-[#0a0b12] border border-gray-800 p-6 rounded-2xl">
-                        <h4 className="text-base font-serif font-bold text-orange-400">📅 Class Schedule Timeline</h4>
+                      <div className="bg-gradient-to-br from-[#120703] to-[#0a0b12] border border-gray-200 p-6 rounded-2xl">
+                        <h4 className="text-base font-serif font-bold text-[var(--color-occult-purple-light)]">📅 Class Schedule Timeline</h4>
                         <p className="text-xs text-gray-400 mt-1 leading-relaxed">
                           Interactive timeline of scheduled virtual interactive workshops and oral recitation drills. Fully purchased users join rooms to participate synchronously.
                         </p>
@@ -2239,7 +2255,7 @@ export default function App() {
                       {/* Display 4 days schedule panels */}
                       <div className="space-y-4">
                         {scheduleSlots.map((sl, index) => (
-                          <div key={index} className="bg-[#111625] border border-gray-800 p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition hover:border-gray-700">
+                          <div key={index} className="bg-[#111625] border border-gray-200 p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition hover:border-gray-200">
                             <div className="space-y-1.5">
                               {/* Labels */}
                               <div className="flex items-center space-x-2">
@@ -2259,7 +2275,7 @@ export default function App() {
                               {/* Timing metadata */}
                               <p className="text-xs text-gray-400 font-sans flex items-center space-x-1">
                                 <span>with </span>
-                                <span className="text-orange-400 font-semibold">{sl.teacher}</span>
+                                <span className="text-[var(--color-occult-purple-light)] font-semibold">{sl.teacher}</span>
                                 <span className="text-gray-600"> | </span>
                                 <span>{sl.time}</span>
                               </p>
@@ -2284,7 +2300,7 @@ export default function App() {
                             ) : (
                               <button
                                 disabled
-                                className="px-4 py-2 bg-gray-900 border border-gray-800 text-gray-650 rounded-xl text-xs font-sans self-start sm:self-center cursor-not-allowed opacity-50"
+                                className="px-4 py-2 bg-white border border-gray-200 text-gray-500 rounded-xl text-xs font-sans self-start sm:self-center cursor-not-allowed opacity-50"
                               >
                                 Room Closed
                               </button>
@@ -2302,13 +2318,13 @@ export default function App() {
                 <div className="space-y-6">
                   
                   {/* Syllabus Chapters Rail Container */}
-                  <div className="bg-[#111625] border border-gray-800 rounded-2xl p-5" id="syllabus-chapters-rail">
-                    <h3 className="text-xs uppercase text-orange-400 font-mono tracking-widest font-bold mb-4 border-b border-gray-800 pb-2">Course syllabus & outline</h3>
+                  <div className="bg-[#111625] border border-gray-200 rounded-2xl p-5" id="syllabus-chapters-rail">
+                    <h3 className="text-xs uppercase text-[var(--color-occult-purple-light)] font-mono tracking-widest font-bold mb-4 border-b border-gray-200 pb-2">Course syllabus & outline</h3>
                     
                     <div className="space-y-4">
                       {selectedCourse.chapters.map((ch) => (
-                        <div key={ch.id} className="border-b border-gray-800/60 pb-3 last:border-0 last:pb-0">
-                          <h4 className="text-xs font-bold text-gray-300 font-serif">{ch.title}</h4>
+                        <div key={ch.id} className="border-b border-gray-200/60 pb-3 last:border-0 last:pb-0">
+                          <h4 className="text-xs font-bold text-gray-700 font-serif">{ch.title}</h4>
                           <div className="mt-2 space-y-1.5">
                             {ch.modules.map((mod) => {
                               const isCompleted = enrollments.find(e => e.userId === currentUser.id && e.courseId === selectedCourse.id)?.completedModuleIds.includes(mod.id);
@@ -2326,14 +2342,14 @@ export default function App() {
                                   className={`w-full text-left p-3 rounded-xl text-xs transition-all flex items-center justify-between cursor-pointer ${
                                     isPlaying 
                                       ? 'bg-orange-600/10 border border-orange-500/40 text-orange-300 shadow-md' 
-                                      : 'bg-gray-900/50 hover:bg-gray-800/80 text-gray-400 border border-transparent'
+                                      : 'bg-gray-100 hover:bg-gray-200 text-gray-600 border border-transparent'
                                   }`}
                                 >
                                   <div className="flex items-center space-x-2 shrink overflow-hidden">
                                     {isCompleted ? (
                                       <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
                                     ) : (
-                                      <Video className="w-4 h-4 text-orange-400 shrink-0" />
+                                      <Video className="w-4 h-4 text-[var(--color-occult-purple-light)] shrink-0" />
                                     )}
                                     <span className="truncate">{mod.title}</span>
                                   </div>
@@ -2349,7 +2365,7 @@ export default function App() {
                     </div>
 
                     {/* Fast certification summary info */}
-                    <div className="mt-6 border-t border-gray-800 pt-4 text-center">
+                    <div className="mt-6 border-t border-gray-200 pt-4 text-center">
                       <span className="text-[9px] uppercase font-mono text-gray-500 tracking-wider block">Gurukul Assessment Council</span>
                     </div>
 
@@ -2370,7 +2386,7 @@ export default function App() {
         {activeTab === 'forum' && (
           <div className="space-y-8" id="community-feed-desk">
             
-            <div className="border-b border-gray-800/60 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="border-b border-gray-200/60 pb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-xl sm:text-2xl font-black text-white">Discussion Forum & Community Feed</h3>
                 <p className="text-xs text-gray-500 font-mono tracking-widest mt-1 uppercase">Share lessons, resolve bugs, connect globally</p>
@@ -2378,10 +2394,10 @@ export default function App() {
 
               {/* Active Statistics */}
               <div className="flex items-center space-x-4 text-xs font-mono">
-                <div className="bg-gray-900 border border-gray-800 px-3.5 py-1.5 rounded-xl text-gray-300">
+                <div className="bg-white border border-gray-200 px-3.5 py-1.5 rounded-xl text-gray-700">
                   <span className="font-bold text-indigo-400">140</span> Active Posts
                 </div>
-                <div className="bg-gray-900 border border-gray-800 px-3.5 py-1.5 rounded-xl text-gray-300">
+                <div className="bg-white border border-gray-200 px-3.5 py-1.5 rounded-xl text-gray-700">
                   <span className="font-bold text-emerald-400">14</span> Online Mentors
                 </div>
               </div>
@@ -2391,7 +2407,7 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
               {/* Left Column: Create discussion Thread */}
-              <div className="bg-[#111625] border border-gray-800 rounded-2xl p-5 sm:p-6 h-fit">
+              <div className="bg-[#111625] border border-gray-200 rounded-2xl p-5 sm:p-6 h-fit">
                 <h4 className="text-xs uppercase text-indigo-400 font-mono tracking-wider font-bold mb-4">Start New Topic Thread</h4>
                 
                 <form onSubmit={handleAddForumThread} className="space-y-4">
@@ -2402,7 +2418,7 @@ export default function App() {
                       value={newDiscussionTitle}
                       onChange={(e) => setNewDiscussionTitle(e.target.value)}
                       placeholder="e.g. CORS issues on Express container entrypoints"
-                      className="w-full bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs sm:text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:ring-offset-0 placeholder-gray-600"
+                      className="w-full bg-white border border-gray-200 p-3 rounded-xl text-xs sm:text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:ring-offset-0 placeholder-gray-600"
                     />
                   </div>
 
@@ -2413,7 +2429,7 @@ export default function App() {
                       onChange={(e) => setNewDiscussionBody(e.target.value)}
                       placeholder="Be specific. Share logs, file paths, or exact code blocks."
                       rows={5}
-                      className="w-full bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs sm:text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:ring-offset-0 placeholder-gray-600 font-sans"
+                      className="w-full bg-white border border-gray-200 p-3 rounded-xl text-xs sm:text-sm text-gray-800 focus:outline-none focus:ring-1 focus:ring-indigo-600 focus:ring-offset-0 placeholder-gray-600 font-sans"
                     ></textarea>
                   </div>
 
@@ -2433,7 +2449,7 @@ export default function App() {
                   <p className="text-xs text-gray-500 text-center py-12">No discussions posted. Clear filters or initiate a topic!</p>
                 ) : (
                   discussions.map((th) => (
-                    <div key={th.id} className="bg-[#111625] border border-gray-800 rounded-2xl p-5 sm:p-6 space-y-4">
+                    <div key={th.id} className="bg-[#111625] border border-gray-200 rounded-2xl p-5 sm:p-6 space-y-4">
                       
                       {/* Author row */}
                       <div className="flex items-center justify-between text-xs text-gray-400">
@@ -2441,10 +2457,10 @@ export default function App() {
                           <img 
                             src={th.authorAvatar} 
                             alt={th.authorName} 
-                            className="w-7 h-7 rounded-full border border-gray-700" 
+                            className="w-7 h-7 rounded-full border border-gray-200" 
                           />
                           <div>
-                            <span className="font-bold text-gray-200">{th.authorName}</span>
+                            <span className="font-bold text-gray-800">{th.authorName}</span>
                             <span className="text-[10px] text-indigo-400 font-mono ml-2 capitalize bg-indigo-950/40 px-2 py-0.5 rounded-md border border-indigo-900/30 font-semibold">{th.authorRole}</span>
                           </div>
                         </div>
@@ -2460,7 +2476,7 @@ export default function App() {
                           <span className="text-[8px] uppercase tracking-wider text-rose-300 font-mono font-bold bg-rose-950/40 px-2 py-0.5 rounded-md border border-rose-900/20 mr-2">Course Thread</span>
                         )}
                         <h4 className="text-sm sm:text-base font-bold text-gray-100 inline">{th.title}</h4>
-                        <p className="text-xs sm:text-sm text-gray-300 mt-2.5 leading-relaxed bg-[#0E121F] p-4 rounded-xl border border-gray-850/80 pr-6 font-sans">
+                        <p className="text-xs sm:text-sm text-gray-700 mt-2.5 leading-relaxed bg-[#0E121F] p-4 rounded-xl border border-gray-850/80 pr-6 font-sans">
                           {th.body}
                         </p>
                       </div>
@@ -2470,16 +2486,16 @@ export default function App() {
                         <div className="space-y-3 pl-4 border-l-2 border-indigo-950 mt-4">
                           <p className="text-[10px] text-gray-500 font-mono uppercase font-black">Curriculum responses ({th.replies.length}):</p>
                           {th.replies.map((rep) => (
-                            <div key={rep.id} className="bg-gray-900/50 p-3.5 rounded-xl border border-gray-850/50 text-xs">
+                            <div key={rep.id} className="bg-white/50 p-3.5 rounded-xl border border-gray-850/50 text-xs">
                               <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1.5">
                                 <div className="flex items-center space-x-1.5">
                                   <img src={rep.authorAvatar} className="w-5 h-5 rounded-full" />
-                                  <span className="font-semibold text-gray-300">{rep.authorName}</span>
+                                  <span className="font-semibold text-gray-700">{rep.authorName}</span>
                                   <span className="text-[9px] text-purple-300 capitalize font-mono bg-purple-950/40 px-1.5 py-0.5 rounded border border-purple-900/20">{rep.authorRole}</span>
                                 </div>
                                 <span className="font-mono text-[9px] text-gray-500">{new Date(rep.createdAt).toLocaleDateString()}</span>
                               </div>
-                              <p className="text-gray-300 leading-relaxed font-sans">{rep.body}</p>
+                              <p className="text-gray-700 leading-relaxed font-sans">{rep.body}</p>
                             </div>
                           ))}
                         </div>
@@ -2492,7 +2508,7 @@ export default function App() {
                           value={newReplyText[th.id] || ''}
                           onChange={(e) => setNewReplyText(prev => ({ ...prev, [th.id]: e.target.value }))}
                           placeholder="Type response code or tips..."
-                          className="flex-1 bg-gray-900 border border-gray-800 p-2.5 rounded-xl text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                          className="flex-1 bg-white border border-gray-200 p-2.5 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-indigo-600"
                         />
                         <button 
                           onClick={() => handleAddThreadReply(th.id)}
@@ -2587,7 +2603,7 @@ export default function App() {
 
         {/* VIEW 5: GURU PORTAL (INSTRUCTOR) */}
         {activeTab === 'instructor-panel' && currentUser.role === 'instructor' && (
-          <GuruPortal
+          <GuruPortal onNavigate={handleNavigate}
             currentUser={currentUser}
             language={language}
             courses={courses}
@@ -2671,23 +2687,23 @@ export default function App() {
         {activeTab === 'profile' && (
           <div className="space-y-8" id="profile-registry">
             
-            <div className="border-b border-gray-800/60 pb-5">
+            <div className="border-b border-gray-200/60 pb-5">
               <h3 className="text-xl sm:text-2xl font-black text-white">Registry Credentials & Profile</h3>
               <p className="text-xs text-gray-500 font-mono tracking-widest mt-1 uppercase font-bold">Secure certificate verifications desk</p>
             </div>
 
-            <div className="bg-[#111625] border border-gray-800 rounded-2xl p-6 flex flex-col sm:flex-row gap-6 items-center">
+            <div className="bg-[#111625] border border-gray-200 rounded-2xl p-6 flex flex-col sm:flex-row gap-6 items-center">
               <img 
                 src={currentUser.avatarUrl} 
                 alt={currentUser.name} 
                 className="w-20 h-20 rounded-full border-2 border-indigo-500"
               />
               <div className="text-center sm:text-left space-y-1">
-                <h4 className="text-lg font-bold text-gray-200">{currentUser.name}</h4>
+                <h4 className="text-lg font-bold text-gray-800">{currentUser.name}</h4>
                 <p className="text-xs text-gray-500 font-mono">{currentUser.email}</p>
                 <div className="pt-2 flex flex-wrap gap-2 justify-center sm:justify-start">
                   <span className="text-[10px] text-indigo-400 font-mono bg-indigo-950/50 px-2.5 py-1 rounded-full border border-indigo-900/40 uppercase font-extrabold">{currentUser.role} Account</span>
-                  <span className="text-[10px] text-gray-400 font-mono bg-gray-900 px-2.5 py-1 rounded-full border border-gray-800">Joined 2026</span>
+                  <span className="text-[10px] text-gray-400 font-mono bg-white px-2.5 py-1 rounded-full border border-gray-200">Joined 2026</span>
                 </div>
               </div>
             </div>
@@ -2698,11 +2714,11 @@ export default function App() {
               <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="space-y-2 text-center md:text-left">
                   <div className="flex items-center justify-center md:justify-start space-x-2">
-                    <span className="px-2.5 py-0.5 bg-orange-500/10 border border-orange-500/20 rounded-full text-[10px] font-bold text-orange-400 uppercase tracking-widest font-mono">REFERRAL PORTAL LIVE</span>
+                    <span className="px-2.5 py-0.5 bg-orange-500/10 border border-orange-500/20 rounded-full text-[10px] font-bold text-[var(--color-occult-purple-light)] uppercase tracking-widest font-mono">REFERRAL PORTAL LIVE</span>
                   </div>
                   <h4 className="text-lg font-black text-white font-serif uppercase tracking-wide">Vedic Refer & Siddhi Credits</h4>
                   <p className="text-xs leading-relaxed max-w-xl text-gray-400 font-serif">
-                    Invite other scholars and seekers into Sanatan Gurukul. Earn <span className="text-amber-400 font-semibold font-serif">10% Cash rewards</span> or <span className="text-orange-400 font-semibold font-serif">15% in celestial Siddhi credits</span> towards your courses & certification path!
+                    Invite other scholars and seekers into Sanatan Gurukul. Earn <span className="text-amber-400 font-semibold font-serif">10% Cash rewards</span> or <span className="text-[var(--color-occult-purple-light)] font-semibold font-serif">15% in celestial Siddhi credits</span> towards your courses & certification path!
                   </p>
                 </div>
                 <button
@@ -2725,7 +2741,7 @@ export default function App() {
                   currentUser.certificates.map(cert => (
                     <div 
                       key={cert.id} 
-                      className="bg-[#111625] border border-gray-800 rounded-2xl p-5 flex items-center justify-between gap-4 font-sans hover:border-gray-700 cursor-pointer"
+                      className="bg-[#111625] border border-gray-200 rounded-2xl p-5 flex items-center justify-between gap-4 font-sans hover:border-gray-200 cursor-pointer"
                       onClick={() => handleVerifyCertificateLink(cert.id)}
                     >
                       <div className="flex items-center space-x-3 shrink overflow-hidden">
@@ -2733,7 +2749,7 @@ export default function App() {
                           <Award className="w-5 h-5" />
                         </div>
                         <div className="overflow-hidden">
-                          <h5 className="font-bold text-gray-200 text-xs truncate">{cert.courseTitle}</h5>
+                          <h5 className="font-bold text-gray-800 text-xs truncate">{cert.courseTitle}</h5>
                           <span className="text-[9px] text-gray-500 font-mono block mt-1">ID: {cert.id} • Issued {new Date(cert.issuedAt).toLocaleDateString()}</span>
                         </div>
                       </div>
@@ -2754,7 +2770,7 @@ export default function App() {
         {/* VIEW 8: CERTIFICATE DETAILED VERIFICATION HUB */}
         {activeTab === 'verification' && activeVerificationCert && (
           <div className="space-y-8" id="verification-hub">
-            <div className="border-b border-gray-800/60 pb-5">
+            <div className="border-b border-gray-200/60 pb-5">
               <h3 className="text-xl sm:text-2xl font-black text-white">Registry Verification Ledger</h3>
               <p className="text-xs text-gray-500 font-mono tracking-widest mt-1 uppercase font-bold">Public secure cryptographic verification audits</p>
             </div>
@@ -2767,7 +2783,7 @@ export default function App() {
         {/* VIEW 9: SPECIAL Socrates-AI CAREER CONCIERGE HUB */}
         {activeTab === 'ai-concierge' && (
           currentUser.role === 'student' && enrollments.length === 0 ? (
-            <div className="text-center py-20 bg-[#0c0604] rounded-3xl border border-orange-500/15 max-w-2xl mx-auto my-12 p-8 shadow-xl animate-in fade-in duration-300">
+            <div className="text-center py-20 bg-white rounded-3xl border border-gray-200 max-w-2xl mx-auto my-12 p-8 shadow-xl animate-in fade-in duration-300">
               <div className="w-16 h-16 bg-gradient-to-tr from-orange-600/20 to-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-orange-500/40 shadow-[0_0_15px_rgba(249,115,22,0.15)] text-2xl font-serif">
                 🔒
               </div>
@@ -2785,7 +2801,7 @@ export default function App() {
           ) : (
             <div className="space-y-8" id="ai-concierge-hub">
             
-            <div className="border-b border-gray-800/60 pb-5">
+            <div className="border-b border-gray-200/60 pb-5">
               <h3 className="text-xl sm:text-2xl font-black text-white">Socrates AI Career Concierge Hub</h3>
               <p className="text-xs text-gray-500 font-mono tracking-widest mt-1 uppercase font-bold">Structured learning blueprints & milestone triggers</p>
             </div>
@@ -2794,10 +2810,10 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               
               {/* Form elements left */}
-              <div className="bg-[#111625] border border-gray-800 rounded-2xl p-5 sm:p-6 space-y-4 h-fit font-sans">
+              <div className="bg-[#111625] border border-gray-200 rounded-2xl p-5 sm:p-6 space-y-4 h-fit font-sans">
                 <div className="flex items-center space-x-2.5 mb-2">
                   <Compass className="w-5 h-5 text-indigo-400 shrink-0" />
-                  <h4 className="font-bold text-gray-200 text-sm">Target Skill & Goals Planner</h4>
+                  <h4 className="font-bold text-gray-800 text-sm">Target Skill & Goals Planner</h4>
                 </div>
 
                 <div>
@@ -2807,7 +2823,7 @@ export default function App() {
                     value={aiCareerSkills}
                     onChange={(e) => setAiCareerSkills(e.target.value)}
                     placeholder="e.g. HTML, CSS, Basic JavaScript, Python"
-                    className="w-full bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                    className="w-full bg-white border border-gray-200 p-3 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-indigo-600"
                   />
                 </div>
 
@@ -2818,7 +2834,7 @@ export default function App() {
                     value={aiCareerGoals}
                     onChange={(e) => setAiCareerGoals(e.target.value)}
                     placeholder="e.g. Lead Generative AI Developer"
-                    className="w-full bg-gray-900 border border-gray-800 p-3 rounded-xl text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-600"
+                    className="w-full bg-white border border-gray-200 p-3 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-indigo-600"
                   />
                 </div>
 
@@ -2834,7 +2850,7 @@ export default function App() {
               {/* Response pathway right */}
               <div className="lg:col-span-2 space-y-6">
                 {aiCareerLoading ? (
-                  <div className="p-12 text-center bg-[#111625]/60 border border-gray-800 rounded-2xl">
+                  <div className="p-12 text-center bg-[#111625]/60 border border-gray-200 rounded-2xl">
                     <Brain className="w-10 h-10 text-indigo-400 animate-spin mx-auto mb-4" />
                     <p className="text-xs text-gray-400 italic">Formulating logical career milestones based on available study tracks...</p>
                   </div>
@@ -2849,7 +2865,7 @@ export default function App() {
                     <div className="space-y-3 font-sans">
                       <h5 className="text-xs uppercase text-indigo-400 font-mono tracking-wider font-bold">Suggested Education Milestones</h5>
                       {aiCareerResult.milestones.map((ms: string, idx: number) => (
-                        <div key={idx} className="bg-gray-900/60 p-3 rounded-xl border border-gray-850 text-xs flex items-center space-x-3 text-gray-300">
+                        <div key={idx} className="bg-white/60 p-3 rounded-xl border border-gray-850 text-xs flex items-center space-x-3 text-gray-700">
                           <span className="w-5 h-5 bg-indigo-600/10 text-indigo-300 border border-indigo-900/40 rounded-lg flex items-center justify-center font-mono text-[10px] font-bold shrink-0">{idx + 1}</span>
                           <span>{ms}</span>
                         </div>
@@ -2879,7 +2895,7 @@ export default function App() {
 
                   </div>
                 ) : (
-                  <div className="p-12 text-center bg-gray-905 border border-gray-805 rounded-2xl font-sans">
+                  <div className="p-12 text-center bg-gray-905 border border-gray-200 rounded-2xl font-sans">
                     <Compass className="w-8 h-8 text-gray-700 mx-auto mb-3" />
                     <p className="text-xs text-gray-500 italic uppercase">Describe your present skills and primary targets to output logical learning blueprinted paths.</p>
                   </div>
@@ -2896,19 +2912,19 @@ export default function App() {
 
       {/* VIEW MODAL: SLIDING CART / SPIRITUAL BASKET */}
       {isCartOpen && (
-        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex justify-end" id="cart-overlay">
-          <div className="bg-[#0b0604] border-l border-orange-500/20 max-w-md w-full h-full flex flex-col justify-between shadow-2xl p-6 relative animate-in slide-in-from-right duration-350 select-none">
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex justify-end" id="cart-overlay">
+          <div className="bg-white border-l border-gray-200 max-w-md w-full h-full flex flex-col justify-between shadow-2xl p-6 relative animate-in slide-in-from-right duration-350 select-none">
             
             {/* Header */}
             <div>
-              <div className="flex items-center justify-between border-b border-orange-500/10 pb-4 mb-6">
+              <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
                 <div className="flex items-center space-x-2">
-                  <ShoppingBag className="w-5 h-5 text-orange-400" />
-                  <h3 className="text-base sm:text-lg font-bold font-serif text-gray-200 uppercase tracking-widest">Spiritual Basket</h3>
+                  <ShoppingBag className="w-5 h-5 text-[var(--color-occult-purple-light)]" />
+                  <h3 className="text-base sm:text-lg font-bold font-serif text-[var(--color-occult-purple)] uppercase tracking-widest">Spiritual Basket</h3>
                 </div>
                 <button 
                   onClick={() => setIsCartOpen(false)}
-                  className="p-1.5 hover:bg-orange-950/20 text-orange-400 hover:text-orange-300 rounded-lg cursor-pointer"
+                  className="p-1.5 hover:bg-gray-100 text-[var(--color-occult-purple-light)] hover:text-[var(--color-occult-purple)] rounded-lg cursor-pointer transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -2917,11 +2933,11 @@ export default function App() {
               {/* Cart Items list */}
               {cart.length === 0 ? (
                 <div className="text-center py-20 px-4">
-                  <ShoppingBag className="w-12 h-12 text-orange-500/30 mx-auto mb-4" />
+                  <ShoppingBag className="w-12 h-12 text-gray-300 mx-auto mb-4" />
                   <p className="text-xs text-gray-500 font-serif italic">Your spiritual basket is currently empty.</p>
                   <button
                     onClick={() => { setIsCartOpen(false); setActiveTab('explore'); }}
-                    className="mt-4 px-4 py-2 bg-[#120703] border border-orange-500/30 text-orange-400 hover:bg-orange-950/10 rounded-xl text-xs uppercase tracking-wider cursor-pointer"
+                    className="mt-4 px-4 py-2 bg-white border border-[var(--color-occult-purple-light)] text-[var(--color-occult-purple)] hover:bg-[var(--color-occult-purple-very-light)] rounded-xl text-xs uppercase tracking-wider cursor-pointer font-bold transition-colors"
                   >
                     Start Browsing Courses
                   </button>
@@ -2929,17 +2945,17 @@ export default function App() {
               ) : (
                 <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
                   {cart.map((item) => (
-                    <div key={item.id} className="bg-[#120703] border border-orange-500/10 rounded-xl p-3 flex items-center justify-between gap-3 relative group">
+                    <div key={item.id} className="bg-white border border-gray-200 hover:border-gray-300 transition-colors rounded-xl p-3 flex items-center justify-between gap-3 relative group shadow-sm">
                       <div className="flex items-center space-x-3 overflow-hidden">
                         <img 
                           src={item.thumbnail} 
                           alt={item.title} 
-                          className="w-12 h-12 rounded-lg object-cover shrink-0 border border-orange-500/10"
+                          className="w-12 h-12 rounded-lg object-cover shrink-0 border border-gray-200"
                           referrerPolicy="no-referrer"
                         />
                         <div className="overflow-hidden">
-                          <h4 className="text-xs font-serif font-bold text-gray-200 truncate uppercase mt-0.5">{item.title}</h4>
-                          <span className="text-[10px] text-gray-400 font-mono">₹{item.price}</span>
+                          <h4 className="text-xs font-serif font-bold text-gray-800 truncate uppercase mt-0.5">{item.title}</h4>
+                          <span className="text-[10px] text-gray-500 font-mono">₹{item.price}</span>
                         </div>
                       </div>
                       <button
@@ -2957,17 +2973,17 @@ export default function App() {
 
             {/* Bottom calculation & checkout */}
             {cart.length > 0 && (
-              <div className="border-t border-orange-500/10 pt-4 space-y-4 font-sans text-xs">
+              <div className="border-t border-gray-200 pt-4 space-y-4 font-sans text-xs">
                 <div className="space-y-2 bg-gray-950/60 p-4 rounded-xl border border-orange-500/5">
                   <div className="flex items-center justify-between text-gray-400">
                     <span>Courses Subtotal</span>
-                    <span className="font-semibold text-gray-200">₹{cart.reduce((sum, i) => sum + i.price, 0)}</span>
+                    <span className="font-semibold text-gray-800">₹{cart.reduce((sum, i) => sum + i.price, 0)}</span>
                   </div>
                   <div className="flex items-center justify-between text-gray-400">
                     <span>GST & Processing Fee</span>
                     <span className="text-emerald-400 font-semibold">₹0 (Sandbox waiver)</span>
                   </div>
-                  <div className="flex items-center justify-between text-gray-200 border-t border-orange-500/10 pt-2 font-bold text-sm">
+                  <div className="flex items-center justify-between text-gray-800 border-t border-gray-200 pt-2 font-bold text-sm">
                     <span>Total Exchange Dakshina</span>
                     <span className="text-[#f97316]">₹{cart.reduce((sum, i) => sum + i.price, 0)}</span>
                   </div>
@@ -2976,7 +2992,7 @@ export default function App() {
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => setCart([])}
-                    className="py-2.5 bg-gray-900 border border-transparent hover:border-orange-500/20 text-gray-400 hover:text-white rounded-xl text-xs font-semibold cursor-pointer text-center"
+                    className="py-2.5 bg-white border border-transparent hover:border-orange-500/20 text-gray-400 hover:text-white rounded-xl text-xs font-semibold cursor-pointer text-center"
                   >
                     Clear Basket
                   </button>
@@ -3023,7 +3039,7 @@ export default function App() {
             
             <h3 className="text-base sm:text-lg font-bold text-[#f97316] mb-0.5 uppercase tracking-wider">Gurukul Checkout Simulator</h3>
             <p className="text-[11px] text-gray-400 mb-4 leading-relaxed font-sans">
-              Complete securing tuition for <span className="text-gray-200 font-semibold font-serif">"{checkoutCourse.title}"</span>. Sandbox gateway integrates simulated Razorpay / Stripe instantly.
+              Complete securing tuition for <span className="text-gray-800 font-semibold font-serif">"{checkoutCourse.title}"</span>. Sandbox gateway integrates simulated Razorpay / Stripe instantly.
             </p>
 
             {/* Coupon Code Input */}
@@ -3035,7 +3051,7 @@ export default function App() {
                   value={couponCodeInput}
                   onChange={(e) => setCouponCodeInput(e.target.value)}
                   placeholder="e.g. SANATAN10"
-                  className="flex-1 bg-gray-950 border border-orange-500/15 p-2 rounded-lg text-xs text-gray-250 focus:outline-none focus:border-orange-500/35 uppercase placeholder-gray-700 font-mono"
+                  className="flex-1 bg-gray-950 border border-gray-200 p-2 rounded-lg text-xs text-gray-700 focus:outline-none focus:border-orange-500/35 uppercase placeholder-gray-700 font-mono"
                 />
                 <button
                   type="button"
@@ -3047,7 +3063,7 @@ export default function App() {
                       alert('Invalid Coupon Code');
                     }
                   }}
-                  className="px-3 py-2 bg-orange-950/40 text-orange-400 hover:text-orange-300 rounded-lg border border-orange-500/20 font-bold transition-all text-[10px] uppercase tracking-wider cursor-pointer"
+                  className="px-3 py-2 bg-orange-950/40 text-[var(--color-occult-purple-light)] hover:text-orange-300 rounded-lg border border-orange-500/20 font-bold transition-all text-[10px] uppercase tracking-wider cursor-pointer"
                 >
                   Apply
                 </button>
@@ -3063,7 +3079,7 @@ export default function App() {
             <div className="space-y-2.5 font-sans text-xs bg-gray-950/80 p-3 rounded-lg border border-orange-500/5 mb-4 text-left">
               <div className="flex items-center justify-between text-gray-400 text-[11px]">
                 <span>Tuition Base Dakshina</span>
-                <span className="font-semibold text-gray-200">₹{checkoutCourse.price}</span>
+                <span className="font-semibold text-gray-800">₹{checkoutCourse.price}</span>
               </div>
               {checkoutDiscount > 0 && (
                 <div className="flex items-center justify-between text-emerald-400 text-[11px]">
@@ -3073,10 +3089,10 @@ export default function App() {
               )}
               <div className="flex items-center justify-between text-gray-400 text-[11px]">
                 <span>GST (18% Goods & Services Tax)</span>
-                <span className="font-semibold text-gray-200">₹{Math.round((checkoutCourse.price - checkoutDiscount) * 0.18)}</span>
+                <span className="font-semibold text-gray-800">₹{Math.round((checkoutCourse.price - checkoutDiscount) * 0.18)}</span>
               </div>
-              <div className="flex items-center justify-between text-gray-200 border-t border-orange-500/10 pt-2 font-semibold text-xs font-serif">
-                <span className="uppercase text-orange-400">Total Exchange Amount</span>
+              <div className="flex items-center justify-between text-gray-800 border-t border-gray-200 pt-2 font-semibold text-xs font-serif">
+                <span className="uppercase text-[var(--color-occult-purple-light)]">Total Exchange Amount</span>
                 <span className="text-[#f97316]">
                   ₹{Math.round(checkoutCourse.price - checkoutDiscount + (checkoutCourse.price - checkoutDiscount) * 0.18)}
                 </span>
@@ -3090,7 +3106,7 @@ export default function App() {
                 onClick={() => { setCheckoutMode('upi'); setQrGenerated(false); }}
                 className={`py-2 rounded-lg border font-semibold transition-all ${
                   checkoutMode === 'upi' 
-                    ? 'bg-orange-950/30 border-orange-500/35 text-orange-400' 
+                    ? 'bg-orange-950/30 border-orange-500/35 text-[var(--color-occult-purple-light)]' 
                     : 'bg-gray-950 border-transparent text-gray-400 hover:text-white'
                 } cursor-pointer`}
               >
@@ -3101,7 +3117,7 @@ export default function App() {
                 onClick={() => setCheckoutMode('card')}
                 className={`py-2 rounded-lg border font-semibold transition-all ${
                   checkoutMode === 'card' 
-                    ? 'bg-orange-950/30 border-orange-500/35 text-orange-400' 
+                    ? 'bg-orange-950/30 border-orange-500/35 text-[var(--color-occult-purple-light)]' 
                     : 'bg-gray-950 border-transparent text-gray-400 hover:text-white'
                 } cursor-pointer`}
               >
@@ -3111,7 +3127,7 @@ export default function App() {
 
             {/* Dynamic Checkout Form Inputs */}
             {checkoutMode === 'upi' ? (
-              <div className="space-y-3 font-sans mb-5 bg-[#0e0705] border border-orange-500/10 p-3 rounded-xl">
+              <div className="space-y-3 font-sans mb-5 bg-[#0e0705] border border-gray-200 p-3 rounded-xl">
                 <div>
                   <label className="block text-[10px] uppercase text-gray-400 mb-1 font-semibold">Enter your UPI ID</label>
                   <input
@@ -3119,7 +3135,7 @@ export default function App() {
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     placeholder="e.g. ashif@okhdfcbank"
-                    className="w-full bg-gray-950 border border-orange-500/10 p-2.5 rounded-lg text-xs text-gray-200 focus:outline-none focus:border-orange-500/30 placeholder-gray-700"
+                    className="w-full bg-gray-950 border border-gray-200 p-2.5 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-orange-500/30 placeholder-gray-700"
                   />
                 </div>
                 
@@ -3129,7 +3145,7 @@ export default function App() {
                 </div>
 
                 {qrGenerated ? (
-                  <div className="flex flex-col items-center bg-[#180d0a] border border-orange-500/15 p-3 rounded-lg text-center space-y-2 animate-in zoom-in-95">
+                  <div className="flex flex-col items-center bg-[#180d0a] border border-gray-200 p-3 rounded-lg text-center space-y-2 animate-in zoom-in-95">
                     <div className="w-32 h-32 bg-white p-2.5 rounded-lg flex items-center justify-center relative shadow-lg">
                       <div className="grid grid-cols-5 gap-1.5 w-full h-full p-1 bg-white">
                         <div className="bg-black rounded-sm"></div>
@@ -3162,7 +3178,7 @@ export default function App() {
                         ॐ
                       </div>
                     </div>
-                    <span className="text-[10px] text-orange-400 font-serif">Interactive Live Paytm / GPay QR</span>
+                    <span className="text-[10px] text-[var(--color-occult-purple-light)] font-serif">Interactive Live Paytm / GPay QR</span>
                   </div>
                 ) : (
                   <button
@@ -3171,14 +3187,14 @@ export default function App() {
                       setQrGenerated(true);
                       // Trigger dynamic sandboxed tone
                     }}
-                    className="w-full py-2 bg-[#120703] border border-orange-500/25 hover:border-orange-500/45 text-orange-400 text-xs font-bold rounded-lg cursor-pointer"
+                    className="w-full py-2 bg-[#120703] border border-orange-500/25 hover:border-orange-500/45 text-[var(--color-occult-purple-light)] text-xs font-bold rounded-lg cursor-pointer"
                   >
                     Generate Dynamic Paytm / PhonePe QR
                   </button>
                 )}
               </div>
             ) : (
-              <div className="space-y-3 font-sans mb-5 bg-[#0e0705] border border-orange-500/10 p-3 rounded-xl text-xs text-left">
+              <div className="space-y-3 font-sans mb-5 bg-[#0e0705] border border-gray-200 p-3 rounded-xl text-xs text-left">
                 <div>
                   <label className="block text-[10px] uppercase text-gray-500 mb-1 font-semibold">Cardholder Name</label>
                   <input
@@ -3186,7 +3202,7 @@ export default function App() {
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
                     placeholder="e.g. Ashif Ansari"
-                    className="w-full bg-gray-950 border border-orange-500/10 p-2.5 rounded-lg text-xs text-gray-200 focus:outline-none focus:border-orange-500/30 placeholder-gray-700"
+                    className="w-full bg-gray-950 border border-gray-200 p-2.5 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-orange-500/30 placeholder-gray-700"
                   />
                 </div>
                 <div>
@@ -3197,7 +3213,7 @@ export default function App() {
                     value={cardNumber}
                     onChange={(e) => setCardNumber(e.target.value.replace(/\s?/g, '').replace(/(\d{4})/g, '$1 ').trim())}
                     placeholder="4111 2222 3333 4444"
-                    className="w-full bg-gray-950 border border-orange-500/10 p-2.5 rounded-lg text-xs text-gray-200 focus:outline-none focus:border-orange-500/30 placeholder-gray-700 font-mono"
+                    className="w-full bg-gray-950 border border-gray-200 p-2.5 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-orange-500/30 placeholder-gray-700 font-mono"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -3209,7 +3225,7 @@ export default function App() {
                       value={cardExpiry}
                       onChange={(e) => setCardExpiry(e.target.value)}
                       placeholder="MM/YY"
-                      className="w-full bg-gray-950 border border-orange-505/10 p-2.5 rounded-lg text-xs text-gray-200 focus:outline-none focus:border-orange-500/35 placeholder-gray-700 font-mono"
+                      className="w-full bg-gray-950 border border-orange-505/10 p-2.5 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-orange-500/35 placeholder-gray-700 font-mono"
                     />
                   </div>
                   <div>
@@ -3220,7 +3236,7 @@ export default function App() {
                       value={cardCvv}
                       onChange={(e) => setCardCvv(e.target.value)}
                       placeholder="***"
-                      className="w-full bg-gray-950 border border-orange-505/10 p-2.5 rounded-lg text-xs text-gray-200 focus:outline-none focus:border-orange-500/35 placeholder-gray-700 font-mono"
+                      className="w-full bg-gray-950 border border-orange-505/10 p-2.5 rounded-lg text-xs text-gray-800 focus:outline-none focus:border-orange-500/35 placeholder-gray-700 font-mono"
                     />
                   </div>
                 </div>
@@ -3232,7 +3248,7 @@ export default function App() {
               <button
                 onClick={() => { setCheckoutCourse(null); setAppliedCoupon(''); setCheckoutDiscount(0); setCouponCodeInput(''); }}
                 disabled={paymentProcessing}
-                className="flex-1 py-3 bg-gray-950 hover:bg-gray-900 text-gray-400 hover:text-white rounded-xl border border-transparent hover:border-orange-500/10 text-xs font-semibold cursor-pointer disabled:opacity-50"
+                className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-white rounded-xl border border-transparent hover:border-gray-200 text-xs font-semibold cursor-pointer disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -3283,7 +3299,7 @@ export default function App() {
           <div className="bg-[#07090e] border border-orange-550/20 w-full max-w-5xl rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[85vh] sm:h-[80vh] md:h-[75vh]" id="live-satsang-modal">
             
             {/* Header bar representing connection telemetry */}
-            <div className="bg-[#0c0e17] border-b border-gray-805/80 p-5 flex items-center justify-between">
+            <div className="bg-white border-b border-gray-200/80 p-5 flex items-center justify-between">
               <div>
                 <div className="flex items-center space-x-2">
                   <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
@@ -3297,7 +3313,7 @@ export default function App() {
 
               <button 
                 onClick={() => setClassSatsangOpen(false)}
-                className="px-4 py-2 bg-gray-900 hover:bg-gray-850 text-gray-400 hover:text-white rounded-xl text-xs font-mono border border-gray-800 transition cursor-pointer"
+                className="px-4 py-2 bg-white hover:bg-gray-850 text-gray-400 hover:text-white rounded-xl text-xs font-mono border border-gray-200 transition cursor-pointer"
               >
                 Leave Room (x)
               </button>
@@ -3310,19 +3326,19 @@ export default function App() {
               <div className="md:col-span-2 bg-black p-6 flex flex-col justify-between overflow-y-auto border-r border-gray-900">
                 
                 {/* Streaming view details */}
-                <div className="flex items-center justify-between text-xs text-gray-450 border-b border-gray-900 pb-3 mb-4">
+                <div className="flex items-center justify-between text-xs text-gray-600 border-b border-gray-900 pb-3 mb-4">
                   <div className="flex items-center space-x-2 font-mono">
                     <span className="text-emerald-400">● 1080p stream</span>
                     <span className="text-gray-600">|</span>
                     <span>128kbps Vedic audio</span>
                   </div>
-                  <span className="bg-[#120703] border border-orange-500/20 px-2.5 py-0.5 rounded text-orange-400 font-serif font-bold">Acharyavidya Session</span>
+                  <span className="bg-[#120703] border border-orange-500/20 px-2.5 py-0.5 rounded text-[var(--color-occult-purple-light)] font-serif font-bold">Acharyavidya Session</span>
                 </div>
 
                 {/* Animated video frame */}
                 <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
                   <div className="relative mb-6">
-                    <div className="w-24 h-24 rounded-full bg-orange-600/10 border-2 border-orange-500/40 flex items-center justify-center animate-pulse text-orange-400">
+                    <div className="w-24 h-24 rounded-full bg-orange-600/10 border-2 border-orange-500/40 flex items-center justify-center animate-pulse text-[var(--color-occult-purple-light)]">
                       <svg viewBox="0 0 24 24" className="w-12 h-12 fill-orange-500" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9s2.015-9 4.5-9m0 0a9.003 9.003 0 013.364 1.706" />
                       </svg>
@@ -3337,7 +3353,7 @@ export default function App() {
                   </p>
 
                   {/* SCRIPTURAL TRANSCRIPT DISPLAY BLOCK */}
-                  <div className="w-full max-w-md bg-[#100702] border border-orange-500/10 rounded-2xl p-4 text-center">
+                  <div className="w-full max-w-md bg-[#100702] border border-gray-200 rounded-2xl p-4 text-center">
                     <span className="text-[8px] uppercase tracking-widest font-mono text-orange-500 font-bold block mb-1">Active Lineage Verse Display</span>
                     <p className="text-sm font-serif italic text-orange-200 mt-1">"ॐ असतो मा सद्गमय । तमसो मा ज्योतिर्गमय ।"</p>
                     <p className="text-[10px] text-gray-500 font-sans mt-1.5 leading-normal">"From untruth lead me to truth. From darkness lead me to light."</p>
@@ -3367,7 +3383,7 @@ export default function App() {
                 
                 {/* Chat title bar */}
                 <div className="bg-[#0f111a] border-b border-gray-905 p-4 flex items-center justify-between">
-                  <span className="text-xs font-bold text-gray-200 font-serif">Sangha Active Chat</span>
+                  <span className="text-xs font-bold text-gray-800 font-serif">Sangha Active Chat</span>
                   <span className="text-[10px] text-emerald-400 font-mono font-bold bg-emerald-950/40 px-2 py-0.5 rounded border border-emerald-900/30">
                     {satsangComments.length + 4} Scholars Online
                   </span>
@@ -3376,16 +3392,16 @@ export default function App() {
                 {/* Chat messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-3.5" id="satsang-scroll-container">
                   {satsangComments.map((sc) => (
-                    <div key={sc.id} className="bg-gray-950/40 p-3 rounded-xl border border-gray-900 text-[11px] space-y-1 hover:border-gray-800 transition">
+                    <div key={sc.id} className="bg-gray-950/40 p-3 rounded-xl border border-gray-900 text-[11px] space-y-1 hover:border-gray-200 transition">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-1.5">
                           <img src={sc.avatar} className="w-4 h-4 rounded-full" referrerPolicy="no-referrer" />
-                          <span className="font-semibold text-gray-200">{sc.sender}</span>
-                          <span className="text-[8px] bg-indigo-950/50 border border-indigo-900/30 px-1 rounded text-orange-400 font-mono scale-90">{sc.role}</span>
+                          <span className="font-semibold text-gray-800">{sc.sender}</span>
+                          <span className="text-[8px] bg-indigo-950/50 border border-indigo-900/30 px-1 rounded text-[var(--color-occult-purple-light)] font-mono scale-90">{sc.role}</span>
                         </div>
                         <span className="text-[8px] text-gray-600 font-mono">{sc.timestamp}</span>
                       </div>
-                      <p className="text-gray-300 font-sans leading-relaxed">{sc.message}</p>
+                      <p className="text-gray-700 font-sans leading-relaxed">{sc.message}</p>
                     </div>
                   ))}
                 </div>
@@ -3428,7 +3444,7 @@ export default function App() {
                     value={newSatsangComment}
                     onChange={(e) => setNewSatsangComment(e.target.value)}
                     placeholder="Ask classmates or pose insights..."
-                    className="flex-1 bg-gray-950 border border-gray-850 p-2.5 rounded-xl text-xs text-gray-200 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                    className="flex-1 bg-gray-950 border border-gray-850 p-2.5 rounded-xl text-xs text-gray-800 focus:outline-none focus:ring-1 focus:ring-orange-500"
                   />
                   <button
                     type="submit"
@@ -3517,7 +3533,7 @@ export default function App() {
       )}
 
       {/* Simple Footer */}
-      <footer className="bg-[#040201] border-t border-orange-500/10 py-8 px-4 text-center text-xs text-orange-400/60 tracking-widest font-serif uppercase mt-12 shrink-0">
+      <footer className="bg-[#040201] border-t border-gray-200 py-8 px-4 text-center text-xs text-[var(--color-occult-purple-light)]/60 tracking-widest font-serif uppercase mt-12 shrink-0">
         <p>© 2026 Sanatan Gurukul Academy. All lineage paths respected.</p>
         <p className="mt-1.5 text-[9px] text-[#f97316]/50 font-serif lowercase tracking-wider">ॐ असतो मा सद्गमय । तमसो मा ज्योतिर्गमय ।</p>
       </footer>

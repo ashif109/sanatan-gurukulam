@@ -264,134 +264,249 @@ export const KNOWLEDGE_BASE: Record<number, NumberDetail> = {
 // CALCULATION LOGICAL UTILITIES
 // ==========================================
 
-export function reduceToSingleOrMaster(num: number): number {
-  if (num === 11 || num === 22 || num === 33) {
-    return num;
+export const PYTHAGOREAN_MAP: Record<string, number> = {
+  A: 1, B: 2, C: 3, D: 4, E: 5, F: 6, G: 7, H: 8, I: 9,
+  J: 1, K: 2, L: 3, M: 4, N: 5, O: 6, P: 7, Q: 8, R: 9,
+  S: 1, T: 2, U: 3, V: 4, W: 5, X: 6, Y: 7, Z: 8
+};
+
+export interface CalculationResult {
+  value: number;
+  trail: string;
+}
+
+export function isMaster(num: number): boolean {
+  return num === 11 || num === 22 || num === 33;
+}
+
+export function reduceToSingleOrMaster(num: number): CalculationResult {
+  if (isMaster(num)) {
+    return { value: num, trail: `${num} (Master Number)` };
   }
+  if (num < 10) {
+    return { value: num, trail: `${num}` };
+  }
+  
   let current = num;
-  while (current > 9) {
-    const sum = current.toString().split('').reduce((acc, char) => acc + parseInt(char, 10), 0);
-    if (sum === 11 || sum === 22 || sum === 33) {
-      return sum;
-    }
+  const trailParts = [current.toString()];
+  
+  while (current > 9 && !isMaster(current)) {
+    const digits = current.toString().split('');
+    const sum = digits.reduce((acc, char) => acc + parseInt(char, 10), 0);
+    trailParts.push(`${digits.join(' + ')} = ${sum}`);
     current = sum;
   }
-  return current;
+  
+  if (isMaster(current)) {
+    trailParts[trailParts.length - 1] += ` (Master Number)`;
+  }
+  
+  return { value: current, trail: trailParts.join(' -> ') };
 }
 
 export function parseDOB(dateStr: string): { day: number; month: number; year: number } {
-  // Accepted input formats: "YYYY-MM-DD", "DD-MM-YYYY", etc. 
-  // Let's parse with robustness
   const parts = dateStr.split(/[-/._]/);
   if (parts.length >= 3) {
-    // Check if first part is Year or Day
     if (parts[0].length === 4) {
-      // YYYY-MM-DD
-      return {
-        year: parseInt(parts[0], 10),
-        month: parseInt(parts[1], 10),
-        day: parseInt(parts[2], 10)
-      };
+      return { year: parseInt(parts[0], 10), month: parseInt(parts[1], 10), day: parseInt(parts[2], 10) };
     } else {
-      // DD-MM-YYYY or MM-DD-YYYY. Let us default to standard HTML date picker input format: YYYY-MM-DD
-      // But support fallback
-      return {
-        day: parseInt(parts[0], 10),
-        month: parseInt(parts[1], 10),
-        year: parseInt(parts[2], 10)
-      };
+      return { day: parseInt(parts[0], 10), month: parseInt(parts[1], 10), year: parseInt(parts[2], 10) };
     }
   }
-  // Try JS Native Date parsing
   const d = new Date(dateStr);
   if (!isNaN(d.getTime())) {
-    return {
-      day: d.getDate(),
-      month: d.getMonth() + 1,
-      year: d.getFullYear()
-    };
+    return { day: d.getDate(), month: d.getMonth() + 1, year: d.getFullYear() };
   }
   return { day: 1, month: 1, year: 2000 };
 }
 
-export function calculateLifePathNumber(dateStr: string): number {
+export function calculateLifePathNumber(dateStr: string): CalculationResult {
   const { day, month, year } = parseDOB(dateStr);
   
-  // The user formula specifically instructs: "Add complete DOB digits. Reduce to a single digit. Preserve master numbers 11, 22, 33."
-  // Example: 15-08-2004 = 1+5+0+8+2+0+0+4 = 20 -> 2
-  const dayStr = day.toString();
-  const monthStr = month.toString();
-  const yearStr = year.toString();
+  const dResult = reduceToSingleOrMaster(day);
+  const mResult = reduceToSingleOrMaster(month);
+  const yResult = reduceToSingleOrMaster(year);
   
-  const allDigits = (dayStr + monthStr + yearStr).replace(/[^0-9]/g, '');
-  const sumOfAllDigits = allDigits.split('').reduce((acc, d) => acc + parseInt(d, 10), 0);
+  const total = dResult.value + mResult.value + yResult.value;
+  const finalResult = reduceToSingleOrMaster(total);
   
-  return reduceToSingleOrMaster(sumOfAllDigits);
+  const trail = `Day (${day}): ${dResult.trail}\nMonth (${month}): ${mResult.trail}\nYear (${year}): ${yResult.trail}\nSum: ${dResult.value} + ${mResult.value} + ${yResult.value} = ${total}\nFinal: ${finalResult.trail}`;
+  
+  return { value: finalResult.value, trail };
 }
 
-export function calculateBirthNumber(dateStr: string): number {
+export function calculateBirthNumber(dateStr: string): CalculationResult {
   const { day } = parseDOB(dateStr);
-  // Mulank: only single digit 1-9
-  let current = day;
-  while (current > 9) {
-    current = current.toString().split('').reduce((acc, char) => acc + parseInt(char, 10), 0);
-  }
-  return current;
+  return reduceToSingleOrMaster(day);
 }
 
-export function nameToChaldeanSum(name: string): number {
-  const cleanName = name.toUpperCase().replace(/[^A-Z]/g, '');
-  let sum = 0;
-  for (let i = 0; i < cleanName.length; i++) {
-    const char = cleanName[i];
-    if (CHALDEAN_MAP[char] !== undefined) {
-      sum += CHALDEAN_MAP[char];
-    }
-  }
-  return sum;
+export function calculateBirthdayNumber(dateStr: string): CalculationResult {
+  const { day } = parseDOB(dateStr);
+  return { value: day, trail: `${day} (Retained as meaningful 1-31)` };
 }
 
-export function calculateDestinyNumber(name: string): number {
-  const sum = nameToChaldeanSum(name);
-  return reduceToSingleOrMaster(sum);
-}
-
-export function calculateSoulUrgeNumber(name: string): number {
-  const cleanName = name.toUpperCase().replace(/[^A-Z]/g, '');
-  let sum = 0;
-  const vowels = ['A', 'E', 'I', 'O', 'U'];
-  for (let i = 0; i < cleanName.length; i++) {
-    const char = cleanName[i];
-    if (vowels.includes(char)) {
-      if (CHALDEAN_MAP[char] !== undefined) {
-        sum += CHALDEAN_MAP[char];
+export function getWordValues(name: string, map: Record<string, number>, filter?: 'vowels' | 'consonants'): { sum: number, trail: string } {
+  const words = name.toUpperCase().split(/\s+/);
+  const wordSums = [];
+  const standardVowels = ['A', 'E', 'I', 'O', 'U'];
+  let totalSum = 0;
+  
+  for (const word of words) {
+    const cleanWord = word.replace(/[^A-Z]/g, '');
+    if (!cleanWord) continue;
+    
+    let wordSum = 0;
+    const hasStandardVowel = cleanWord.split('').some(char => standardVowels.includes(char));
+    const vowels = hasStandardVowel ? standardVowels : [...standardVowels, 'Y'];
+    const chars = [];
+    
+    for (let i = 0; i < cleanWord.length; i++) {
+      const char = cleanWord[i];
+      const isVowel = vowels.includes(char);
+      const includeChar = filter === 'vowels' ? isVowel : (filter === 'consonants' ? !isVowel : true);
+      
+      if (includeChar && map[char] !== undefined) {
+        wordSum += map[char];
+        chars.push(`${char}(${map[char]})`);
       }
     }
-  }
-  return reduceToSingleOrMaster(sum);
-}
-
-export function calculatePersonalityNumber(name: string): number {
-  const cleanName = name.toUpperCase().replace(/[^A-Z]/g, '');
-  let sum = 0;
-  const vowels = ['A', 'E', 'I', 'O', 'U'];
-  for (let i = 0; i < cleanName.length; i++) {
-    const char = cleanName[i];
-    if (!vowels.includes(char)) {
-      if (CHALDEAN_MAP[char] !== undefined) {
-        sum += CHALDEAN_MAP[char];
-      }
+    
+    totalSum += wordSum;
+    if (chars.length > 0) {
+      wordSums.push(`[${chars.join(' + ')} = ${wordSum}]`);
+    } else {
+      wordSums.push(`[0]`);
     }
   }
-  return reduceToSingleOrMaster(sum);
+  
+  const wordsTrail = wordSums.join(' + ');
+  return { sum: totalSum, trail: `${wordsTrail} = ${totalSum}` };
 }
 
-export function calculateExpressionNumber(name: string): number {
-  const sum = nameToChaldeanSum(name);
-  // Reduce fully matching Destiny but is represented in the UI for comprehensive summary
-  return reduceToSingleOrMaster(sum);
+export function calculateDestinyNumber(name: string, system: 'chaldean' | 'pythagorean' = 'chaldean'): CalculationResult {
+  const map = system === 'chaldean' ? CHALDEAN_MAP : PYTHAGOREAN_MAP;
+  const { sum, trail } = getWordValues(name, map);
+  const result = reduceToSingleOrMaster(sum);
+  return { value: result.value, trail: `${trail}\nReduction: ${result.trail}` };
 }
 
+export function calculateSoulUrgeNumber(name: string, system: 'chaldean' | 'pythagorean' = 'chaldean'): CalculationResult {
+  const map = system === 'chaldean' ? CHALDEAN_MAP : PYTHAGOREAN_MAP;
+  const { sum, trail } = getWordValues(name, map, 'vowels');
+  const result = reduceToSingleOrMaster(sum);
+  return { value: result.value, trail: `${trail}\nReduction: ${result.trail}` };
+}
+
+export function calculatePersonalityNumber(name: string, system: 'chaldean' | 'pythagorean' = 'chaldean'): CalculationResult {
+  const map = system === 'chaldean' ? CHALDEAN_MAP : PYTHAGOREAN_MAP;
+  const { sum, trail } = getWordValues(name, map, 'consonants');
+  const result = reduceToSingleOrMaster(sum);
+  return { value: result.value, trail: `${trail}\nReduction: ${result.trail}` };
+}
+
+export function calculateExpressionNumber(name: string, system: 'chaldean' | 'pythagorean' = 'chaldean'): CalculationResult {
+  return calculateDestinyNumber(name, system);
+}
+
+export function calculateMaturityNumber(lifePath: number, destiny: number): CalculationResult {
+  const sum = lifePath + destiny;
+  const result = reduceToSingleOrMaster(sum);
+  return { value: result.value, trail: `Life Path (${lifePath}) + Destiny (${destiny}) = ${sum}\nReduction: ${result.trail}` };
+}
+
+export function calculateBalanceNumber(name: string, system: 'chaldean' | 'pythagorean' = 'chaldean'): CalculationResult {
+  const words = name.toUpperCase().split(/\s+/).map(w => w.replace(/[^A-Z]/g, '')).filter(w => w.length > 0);
+  const map = system === 'chaldean' ? CHALDEAN_MAP : PYTHAGOREAN_MAP;
+  let sum = 0;
+  const trailParts = [];
+  
+  for (const word of words) {
+    const init = word[0];
+    if (init && map[init]) {
+      sum += map[init];
+      trailParts.push(`${init}(${map[init]})`);
+    }
+  }
+  
+  if (sum === 0) return { value: 0, trail: "0" };
+  const result = reduceToSingleOrMaster(sum);
+  return { value: result.value, trail: `Initials: ${trailParts.join(' + ')} = ${sum}\nReduction: ${result.trail}` };
+}
+
+export function calculatePersonalYear(dob: string, currentDate: string): CalculationResult {
+  const birth = parseDOB(dob);
+  const current = parseDOB(currentDate);
+  
+  const dResult = reduceToSingleOrMaster(birth.day);
+  const mResult = reduceToSingleOrMaster(birth.month);
+  const yResult = reduceToSingleOrMaster(current.year);
+  
+  const total = dResult.value + mResult.value + yResult.value;
+  const finalResult = reduceToSingleOrMaster(total);
+  
+  const trail = `Birth Day (${birth.day}): ${dResult.trail}\nBirth Month (${birth.month}): ${mResult.trail}\nCurrent Year (${current.year}): ${yResult.trail}\nSum: ${dResult.value} + ${mResult.value} + ${yResult.value} = ${total}\nFinal: ${finalResult.trail}`;
+  
+  return { value: finalResult.value, trail };
+}
+
+export function calculatePersonalMonth(personalYear: number, currentDate: string): CalculationResult {
+  const current = parseDOB(currentDate);
+  const mResult = reduceToSingleOrMaster(current.month);
+  const total = personalYear + mResult.value;
+  const result = reduceToSingleOrMaster(total);
+  
+  return { value: result.value, trail: `Personal Year (${personalYear}) + Current Month (${current.month} -> ${mResult.value}) = ${total}\nReduction: ${result.trail}` };
+}
+
+export function calculatePersonalDay(personalMonth: number, currentDate: string): CalculationResult {
+  const current = parseDOB(currentDate);
+  const dResult = reduceToSingleOrMaster(current.day);
+  const total = personalMonth + dResult.value;
+  const result = reduceToSingleOrMaster(total);
+  
+  return { value: result.value, trail: `Personal Month (${personalMonth}) + Current Day (${current.day} -> ${dResult.value}) = ${total}\nReduction: ${result.trail}` };
+}
+
+export function calculatePinnacles(dob: string): { 
+  first: CalculationResult, second: CalculationResult, third: CalculationResult, fourth: CalculationResult,
+  firstAge: number, secondAge: number, thirdAge: number
+} {
+  const birth = parseDOB(dob);
+  const dResult = reduceToSingleOrMaster(birth.day);
+  const mResult = reduceToSingleOrMaster(birth.month);
+  const yResult = reduceToSingleOrMaster(birth.year);
+  
+  const firstSum = mResult.value + dResult.value;
+  const first = reduceToSingleOrMaster(firstSum);
+  first.trail = `Month (${mResult.value}) + Day (${dResult.value}) = ${firstSum}\nReduction: ${first.trail}`;
+  
+  const secondSum = dResult.value + yResult.value;
+  const second = reduceToSingleOrMaster(secondSum);
+  second.trail = `Day (${dResult.value}) + Year (${yResult.value}) = ${secondSum}\nReduction: ${second.trail}`;
+  
+  const thirdSum = first.value + second.value;
+  const third = reduceToSingleOrMaster(thirdSum);
+  third.trail = `1st Pinnacle (${first.value}) + 2nd Pinnacle (${second.value}) = ${thirdSum}\nReduction: ${third.trail}`;
+  
+  const fourthSum = mResult.value + yResult.value;
+  const fourth = reduceToSingleOrMaster(fourthSum);
+  fourth.trail = `Month (${mResult.value}) + Year (${yResult.value}) = ${fourthSum}\nReduction: ${fourth.trail}`;
+  
+  let singleLifePath = calculateLifePathNumber(dob).value;
+  while(singleLifePath > 9 && singleLifePath !== 11 && singleLifePath !== 22 && singleLifePath !== 33) {
+    singleLifePath = singleLifePath.toString().split('').reduce((a, b) => a + parseInt(b), 0);
+  }
+  // Standard numerology age formula uses the fully reduced life path (1-9)
+  const reducedLp = (singleLifePath === 11) ? 2 : (singleLifePath === 22) ? 4 : (singleLifePath === 33) ? 6 : singleLifePath;
+  
+  const firstAge = 36 - reducedLp;
+  const secondAge = firstAge + 9;
+  const thirdAge = secondAge + 9;
+  
+  return { first, second, third, fourth, firstAge, secondAge, thirdAge };
+}
+
+// Advanced Compatibility Analysis
 // Advanced Compatibility Analysis
 export function checkNumerologyCompatibility(n1: number, n2: number): {
   score: number;
@@ -477,7 +592,7 @@ export function assessBusinessName(name: string): {
   vibes: string;
   advice: string;
 } {
-  const num = calculateDestinyNumber(name);
+  const num = calculateDestinyNumber(name, 'chaldean').value;
   
   // Best digits for business in Chaldean systems are usually 1 (Sun - authority, leadership), 3 (Jupiter - wealth, growth), 5 (Mercury - transactions, trade), 6 (Venus - luxury, aesthetics, food)
   if ([1, 3, 5, 6, 33].includes(num)) {
@@ -524,7 +639,7 @@ export function analyzeMobileNumber(phoneStr: string): {
     return { totalSum: 0, reduced: 0, vibe: "No data", suitability: "N/A" };
   }
   const totalSum = digits.split('').reduce((acc, d) => acc + parseInt(d, 10), 0);
-  const reduced = reduceToSingleOrMaster(totalSum);
+  const reduced = reduceToSingleOrMaster(totalSum).value;
 
   const keyVibes: Record<number, { vibe: string; suit: string }> = {
     1: { vibe: "Commanding, active, entrepreneurial, highly personal.", suit: "Best for top executives, company directors, founders." },
@@ -573,7 +688,7 @@ export function analyzeVehicleNumber(plateStr: string): {
     }
   }
 
-  const reduced = reduceToSingleOrMaster(totalSum);
+  const reduced = reduceToSingleOrMaster(totalSum).value;
 
   const vehicleVibes: Record<number, { vibe: string; energy: 'HIGHLY HARMONIOUS' | 'STABLE' | 'requires_attention'; remedy: string }> = {
     1: { vibe: "Leader vehicle, speedy, attention-grabbing. Thrives on highways.", energy: "HIGHLY HARMONIOUS", remedy: "Keep dashboard spotlessly clean, place a small solar/bronze coin symbol." },

@@ -124,16 +124,16 @@ How can I guide you in your spiritual and academic seeker's path today?`,
   };
 
   return (
-    <div className="bg-[#0c0604] border border-orange-500/20 rounded-2xl p-4 sm:p-5 h-[620px] flex flex-col shadow-[0_4px_30px_rgba(0,0,0,0.5)] sacred-glow">
+    <div className="bg-white border border-gray-200 rounded-2xl p-4 sm:p-5 h-[620px] flex flex-col shadow-[0_4px_30px_rgba(0,0,0,0.5)] sacred-glow">
       
       {/* Title Header with Glowing Aura */}
-      <div className="flex items-center justify-between pb-3.5 border-b border-orange-500/10 shrink-0">
+      <div className="flex items-center justify-between pb-3.5 border-b border-gray-200 shrink-0">
         <div className="flex items-center space-x-3">
           <div className="bg-gradient-to-r from-orange-600 to-amber-500 p-2.5 rounded-xl shadow-lg shadow-orange-600/10">
-            <Sparkles className="w-4 h-4 text-white animate-pulse" />
+            <Sparkles className="w-4 h-4 text-gray-900 animate-pulse" />
           </div>
           <div>
-            <h3 className="font-serif font-bold text-sm tracking-widest text-orange-400">SANKALP VEDIC AI GURU</h3>
+            <h3 className="font-serif font-bold text-sm tracking-widest text-[var(--color-occult-purple)]">SANKALP VEDIC AI GURU</h3>
             <p className="text-[9px] text-[#f97316]/60 font-mono tracking-wider uppercase font-semibold">Sankalp Neural Shastra AI Core</p>
           </div>
         </div>
@@ -176,19 +176,19 @@ How can I guide you in your spiritual and academic seeker's path today?`,
             </div>
           ) : (
             savedResponses.map(item => (
-              <div key={item.id} className="p-4 bg-orange-950/5 border border-orange-500/10 rounded-xl relative">
-                <h4 className="text-xs font-serif font-bold text-orange-400 border-b border-orange-500/5 pb-1 mb-2 tracking-wide uppercase">{item.title}</h4>
-                <p className="text-xs text-gray-300 leading-relaxed font-mono whitespace-pre-wrap">{item.text}</p>
+              <div key={item.id} className="p-4 bg-orange-950/5 border border-gray-200 rounded-xl relative">
+                <h4 className="text-xs font-serif font-bold text-[var(--color-occult-purple)] border-b border-orange-500/5 pb-1 mb-2 tracking-wide uppercase">{item.title}</h4>
+                <p className="text-xs text-gray-600 leading-relaxed font-mono whitespace-pre-wrap">{item.text}</p>
                 <div className="flex items-center justify-end space-x-2 mt-3 text-[10px]">
                   <button 
                     onClick={() => handleCopyText(item.text)}
-                    className="px-2.5 py-1 bg-orange-950/30 text-gray-300 rounded hover:text-white hover:bg-orange-950/50"
+                    className="px-2.5 py-1 bg-orange-950/30 text-gray-600 rounded hover:text-gray-900 hover:bg-orange-950/50"
                   >
                     Copy
                   </button>
                   <button 
                     onClick={() => handleDeleteSaved(item.id)}
-                    className="px-2.5 py-1 bg-red-950/30 text-red-400 rounded hover:text-red-300"
+                    className="px-2.5 py-1 bg-red-950/30 text-red-500 rounded hover:text-red-300"
                   >
                     Delete
                   </button>
@@ -210,8 +210,8 @@ How can I guide you in your spiritual and academic seeker's path today?`,
               >
                 <div className={`max-w-[85%] rounded-2xl p-3.5 text-xs leading-relaxed ${
                   m.sender === 'user' 
-                    ? 'bg-gradient-to-tr from-orange-600/90 to-amber-600 text-white rounded-br-none shadow-md shadow-orange-900/10'
-                    : 'bg-[#120a06] border border-orange-500/10 text-gray-200 rounded-bl-none font-sans'
+                    ? 'bg-gradient-to-tr from-orange-600/90 to-amber-600 text-gray-900 rounded-br-none shadow-md shadow-orange-900/10'
+                    : 'bg-[#120a06] border border-gray-200 text-gray-700 rounded-bl-none font-sans'
                 }`}>
                   
                   {/* Sender title */}
@@ -221,7 +221,7 @@ How can I guide you in your spiritual and academic seeker's path today?`,
                   </div>
 
                   {/* Rendered content */}
-                  <div className="prose prose-invert max-w-none break-words whitespace-pre-wrap font-sans text-gray-300">
+                  <div className="prose prose-invert max-w-none break-words whitespace-pre-wrap font-sans text-gray-600">
                     {m.text}
                   </div>
 
@@ -253,7 +253,7 @@ How can I guide you in your spiritual and academic seeker's path today?`,
             
             {loading && (
               <div className="flex justify-start">
-                <div className="bg-[#120a06] border border-orange-500/10 rounded-2xl rounded-bl-none p-4 max-w-[80%] flex items-center space-x-2 text-xs text-orange-400 animate-pulse">
+                <div className="bg-[#120a06] border border-gray-200 rounded-2xl rounded-bl-none p-4 max-w-[80%] flex items-center space-x-2 text-xs text-[var(--color-occult-purple)] animate-pulse">
                   <div className="flex space-x-1">
                     <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
                     <div className="w-1.5 h-1.5 bg-orange-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
@@ -269,13 +269,13 @@ How can I guide you in your spiritual and academic seeker's path today?`,
           {/* Presets Grid */}
           {messages.length <= 1 && (
             <div className="p-1 pb-3 shrink-0">
-              <p className="text-[9px] font-bold tracking-widest text-[#f97316]/50 uppercase font-serif mb-2">sacred query seeds:</p>
+              <p className="text-[9px] font-bold tracking-widest text-[var(--color-occult-purple-light)] uppercase font-serif mb-2">sacred query seeds:</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {SUGGESTED_CHIPS.map((chip, idx) => (
                   <button
                     key={idx}
                     onClick={() => handleSendMessage(chip.query)}
-                    className="p-2.5 rounded-xl bg-[#0f0805] hover:bg-orange-950/20 border border-orange-500/5 hover:border-orange-500/20 text-left text-[11px] text-gray-400 hover:text-orange-300 transition-all cursor-pointer truncate"
+                    className="p-2.5 rounded-xl bg-[#0f0805] hover:bg-orange-950/20 border border-orange-500/5 hover:border-orange-500/20 text-left text-[11px] text-gray-500 hover:text-orange-300 transition-all cursor-pointer truncate"
                   >
                     {chip.label}
                   </button>
@@ -285,7 +285,7 @@ How can I guide you in your spiritual and academic seeker's path today?`,
           )}
 
           {/* Message Input Trigger Container */}
-          <div className="border-t border-orange-500/10 pt-3 shrink-0">
+          <div className="border-t border-gray-200 pt-3 shrink-0">
             <div className="relative flex items-center">
               <input
                 type="text"
@@ -294,12 +294,12 @@ How can I guide you in your spiritual and academic seeker's path today?`,
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                 disabled={loading}
-                className="w-full bg-[#0f0805] text-xs text-gray-200 border border-orange-500/20 rounded-xl pl-3.5 pr-12 py-3 focus:outline-none focus:border-orange-500/50"
+                className="w-full bg-[#0f0805] text-xs text-gray-700 border border-gray-200 rounded-xl pl-3.5 pr-12 py-3 focus:outline-none focus:border-orange-500/50"
               />
               <button
                 onClick={() => handleSendMessage()}
                 disabled={loading || !inputText.trim()}
-                className="absolute right-2 p-2 rounded-lg bg-orange-600 text-white hover:bg-orange-500 disabled:opacity-40 transition-colors cursor-pointer"
+                className="absolute right-2 p-2 rounded-lg bg-orange-600 text-gray-900 hover:bg-orange-500 disabled:opacity-40 transition-colors cursor-pointer"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>
