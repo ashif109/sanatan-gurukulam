@@ -26,9 +26,9 @@ export default function HomeView({ onNavigate, language }: HomeViewProps) {
   ];
 
   const popularCourses = [
-    { id: "course-1", title: "Introduction to Astrology", desc: "Beginner-friendly astrology course covering houses, signs, and planets. Learn to read birth charts and...", duration: "2+ Hours", learners: "2,00,000+", rating: "4.9", reviews: "2,200+", price: "₹199", tag: "Basic", image: "public/ChatGPT astrology Image Jul 1, 2026, 11_05_03 PM.png", details: "1 Year Access • Certificate Included • Live Practice" },
-    { id: "course-2", title: "Learn Numerology with the Basic Numerology Course", desc: "Understand how numbers influence personality, relationships, and life decisions with this beginner-...", duration: "4 Hours", learners: "2,00,000+", rating: "4.7", reviews: "2,800+", price: "₹999", tag: "Basic", image: "public/ChatGPT numrology Image Jul 1, 2026, 11_09_34 PM.png", details: "1 Year Access • Certificate Included • Live Practice" },
-    { id: "course-3", title: "Advanced Panchang Mastery Course", desc: "Predict Using Panchang Beyond Kundli Go beyond basic astrology and unlock the real power of...", duration: "25+ Hours", learners: "2,00,000+", rating: "4.8", reviews: "2,100+", price: "₹34999", tag: "Advanced", image: "public/3rd thumbnai;.png", details: "1 Year Access • Certificate Included • Live Practice" }
+    { id: "course-1", title: "Introduction to Astrology", desc: "Beginner-friendly astrology course covering houses, signs, and planets. Learn to read birth charts and...", duration: "2+ Hours", learners: "2,00,000+", rating: "4.9", reviews: "2,200+", price: "₹199", tag: "Basic", image: "/astrology-course.png", details: "1 Year Access • Certificate Included • Live Practice" },
+    { id: "course-2", title: "Learn Numerology with the Basic Numerology Course", desc: "Understand how numbers influence personality, relationships, and life decisions with this beginner-...", duration: "4 Hours", learners: "2,00,000+", rating: "4.7", reviews: "2,800+", price: "₹999", tag: "Basic", image: "/numerology-course.png", details: "1 Year Access • Certificate Included • Live Practice" },
+    { id: "course-3", title: "Advanced Panchang Mastery Course", desc: "Predict Using Panchang Beyond Kundli Go beyond basic astrology and unlock the real power of...", duration: "25+ Hours", learners: "2,00,000+", rating: "4.8", reviews: "2,100+", price: "₹34999", tag: "Advanced", image: "/panchang-course.png", details: "1 Year Access • Certificate Included • Live Practice" }
   ];
 
   return (
@@ -117,7 +117,7 @@ export default function HomeView({ onNavigate, language }: HomeViewProps) {
             {/* Main Image */}
             <div className="relative z-10 h-full flex items-end justify-center w-full max-w-[500px] mx-auto pointer-events-auto">
               <img
-                src="public/ChatGPT Image Jul 1, 2026, 10_59_38 PM.png"
+                src="/hero-image.png"
                 alt="Occult Scholar Instructor"
                 className="w-full max-w-[400px] lg:max-w-[480px] h-auto max-h-[500px] lg:max-h-[600px] object-cover object-top rounded-t-full shadow-2xl border-4 border-white/10 filter brightness-105 contrast-105"
               />
